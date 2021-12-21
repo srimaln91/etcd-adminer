@@ -1,0 +1,11 @@
+http:
+  port: 8086
+
+logger:
+  level: "DEBUG"
+
+etcd:
+  endpoints:
+  - "0.0.0.0:23791"
+  - "0.0.0.0:23792"
+  - "0.0.0.0:23793"
