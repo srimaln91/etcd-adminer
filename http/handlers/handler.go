@@ -3,10 +3,12 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/srimaln91/etcd-adminer/config"
 	"github.com/srimaln91/etcd-adminer/etcd"
+	"github.com/srimaln91/etcd-adminer/filetree"
 	"github.com/srimaln91/etcd-adminer/log"
 	"go.etcd.io/etcd/api/v3/v3rpc/rpctypes"
 	clientv3 "go.etcd.io/etcd/client/v3"
@@ -86,12 +88,21 @@ func (jh *GenericHandler) GetKeys(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	keyList := make([]string, 0)
+	rootDirectory := filetree.NewFolder("/")
+
 	for _, k := range keys.Kvs {
-		keyList = append(keyList, string(k.Key))
+		segments := strings.Split(string(k.Key), "/")
+
+		segments = segments[1:]
+		length := len(segments)
+
+		path := segments[:length-1]
+		filename := segments[length-1]
+
+		rootDirectory.AddFile(path, filename, []byte{})
 	}
 
-	respData, err := json.Marshal(keyList)
+	respData, err := json.Marshal(rootDirectory)
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
