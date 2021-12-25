@@ -1,19 +1,18 @@
 package filetree
 
 import (
-	"bytes"
 	"testing"
 )
 
 func TestNewTree(t *testing.T) {
-	f := NewFolder("/")
+	f := NewNode("/")
 	if f == nil {
 		t.Error("invalid result")
 	}
 }
 
 func TestCreatePath(t *testing.T) {
-	f := NewFolder("/")
+	f := NewNode("/")
 	if f == nil {
 		t.Error("invalid result")
 	}
@@ -26,17 +25,17 @@ func TestCreatePath(t *testing.T) {
 }
 
 func TestAddFile(t *testing.T) {
-	f := NewFolder("/")
+	f := NewNode("/")
 	if f == nil {
 		t.Error("invalid result")
 	}
 
 	path := []string{"system", "app1", "db"}
 	filename := "testfile"
-	fileContent := []byte("test byte array")
+	// fileContent := []byte("test byte array")
 
-	file := f.AddFile(path, filename, fileContent)
-	if !bytes.Equal(fileContent, file.Content.([]byte)) {
-		t.Error("incorrect result")
-	}
+	f.AddFile(path, filename)
+	// if !bytes.Equal(fileContent, file.Content.([]byte)) {
+	// 	t.Error("incorrect result")
+	// }
 }

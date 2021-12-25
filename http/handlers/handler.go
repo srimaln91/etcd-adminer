@@ -82,13 +82,13 @@ func (jh *GenericHandler) GetKeys(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	keys, err := client.Get(r.Context(), "/", clientv3.WithKeysOnly(), clientv3.WithPrefix())
+	keys, err := client.Get(r.Context(), "/", clientv3.WithKeysOnly(), clientv3.WithPrefix(), clientv3.WithSort(clientv3.SortByKey, clientv3.SortDescend))
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	rootDirectory := filetree.NewFolder("/")
+	rootDirectory := filetree.NewNode("/")
 
 	for _, k := range keys.Kvs {
 		segments := strings.Split(string(k.Key), "/")
@@ -99,7 +99,7 @@ func (jh *GenericHandler) GetKeys(rw http.ResponseWriter, r *http.Request) {
 		path := segments[:length-1]
 		filename := segments[length-1]
 
-		rootDirectory.AddFile(path, filename, []byte{})
+		rootDirectory.AddFile(path, filename)
 	}
 
 	respData, err := json.Marshal(rootDirectory)

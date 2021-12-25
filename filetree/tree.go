@@ -1,53 +1,74 @@
 package filetree
 
-type File struct {
-	Name    string      `json:"name"`
-	Content interface{} `json:"content"`
+import (
+	"strings"
+	"sync/atomic"
+)
+
+var counter int64
+
+type Node struct {
+	ID       int64            `json:"id"`
+	Name     string           `json:"name"`
+	Type     string           `json:"type"`
+	NodesMap map[string]*Node `json:"-"`
+	Nodes    []*Node          `json:"children"`
+	AbsPath  string           `json:"abspath"`
 }
 
-type Folder struct {
-	Name    string             `json:"name"`
-	Folders map[string]*Folder `json:"folders"`
-	Files   []*File            `json:"files"`
-}
-
-func NewFolder(name string) *Folder {
-	return &Folder{
-		Name:    name,
-		Folders: make(map[string]*Folder),
-		Files:   make([]*File, 0),
+func NewNode(name string) *Node {
+	return &Node{
+		ID:       atomic.AddInt64(&counter, 1),
+		Name:     name,
+		Type:     "directory",
+		NodesMap: make(map[string]*Node),
+		Nodes:    make([]*Node, 0),
+		AbsPath:  name,
 	}
 }
 
-func (f *Folder) NewFolder(name string) *Folder {
-	folder := NewFolder(name)
-	f.Folders[name] = folder
+func (f *Node) NewFolder(name string) *Node {
+	folder := NewNode(name)
+	f.NodesMap[name] = folder
+	f.Nodes = append(f.Nodes, folder)
 	return folder
 }
 
-func (f *Folder) SetupPath(path []string) *Folder {
+func (f *Node) SetupPath(path []string) *Node {
 	leafNode := f
+
+	absPath := new(strings.Builder)
+
 	for _, p := range path {
-		if _, ok := leafNode.Folders[p]; !ok {
+		if _, ok := leafNode.NodesMap[p]; !ok {
 			folder := leafNode.NewFolder(p)
+
+			absPath.WriteString("/")
+			absPath.WriteString(p)
+
+			folder.AbsPath = absPath.String()
 			leafNode = folder
 			continue
 		}
-		leafNode = leafNode.Folders[p]
+		leafNode = leafNode.NodesMap[p]
 	}
 
 	return leafNode
 }
 
-func (f *Folder) AddFile(path []string, filename string, content interface{}) *File {
+func (f *Node) AddFile(path []string, filename string) *Node {
 	// Setup the path
 	leafNode := f.SetupPath(path)
 
-	file := &File{
+	file := &Node{
+		ID:      atomic.AddInt64(&counter, 1),
 		Name:    filename,
-		Content: content,
+		Type:    "file",
+		AbsPath: leafNode.AbsPath + "/" + filename,
 	}
 
-	leafNode.Files = append(leafNode.Files, file)
+	leafNode.NodesMap[file.Name] = file
+	leafNode.Nodes = append(leafNode.Nodes, file)
+
 	return file
 }
