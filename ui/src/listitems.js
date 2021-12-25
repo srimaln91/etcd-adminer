@@ -9,16 +9,17 @@ import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LayersIcon from '@mui/icons-material/Layers';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import { Link } from '@mui/material';
 
 export const mainListItems = (
   <div>
-    <ListItem button>
+    <ListItem button component="a" href="connection">
       <ListItemIcon>
         <DashboardIcon />
       </ListItemIcon>
       <ListItemText primary="Connection" />
     </ListItem>
-    <ListItem button>
+    <ListItem button component="a" href="keys">
       <ListItemIcon>
       <AssignmentIcon />
       </ListItemIcon>
