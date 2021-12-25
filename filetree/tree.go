@@ -1,7 +1,6 @@
 package filetree
 
 import (
-	"strings"
 	"sync/atomic"
 )
 
@@ -23,7 +22,7 @@ func NewNode(name string) *Node {
 		Type:     "directory",
 		NodesMap: make(map[string]*Node),
 		Nodes:    make([]*Node, 0),
-		AbsPath:  name,
+		AbsPath:  "",
 	}
 }
 
@@ -37,16 +36,12 @@ func (f *Node) NewFolder(name string) *Node {
 func (f *Node) SetupPath(path []string) *Node {
 	leafNode := f
 
-	absPath := new(strings.Builder)
-
 	for _, p := range path {
 		if _, ok := leafNode.NodesMap[p]; !ok {
 			folder := leafNode.NewFolder(p)
 
-			absPath.WriteString("/")
-			absPath.WriteString(p)
+			folder.AbsPath = leafNode.AbsPath + "/" + p
 
-			folder.AbsPath = absPath.String()
 			leafNode = folder
 			continue
 		}
