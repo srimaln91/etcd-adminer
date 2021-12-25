@@ -143,7 +143,7 @@ function App() {
           }}
         >
           <Toolbar />
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+          <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<KeysComponent />} />

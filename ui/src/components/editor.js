@@ -82,11 +82,14 @@ class EditorComponent extends React.Component {
                     height: 800,
                 }}
             >
+                <Paper sx={{marginBottom: 1, paddingLeft: 2}}>
+                    <p>Key: {this.state.key}</p>
+                </Paper>
                 <div>
 
                     <MonacoEditor
                         width="100%"
-                        height="700"
+                        height="650"
                         language="javascript"
                         theme="vs-dark"
                         value={code}
@@ -95,8 +98,8 @@ class EditorComponent extends React.Component {
                         editorDidMount={this.editorDidMount}
                     />
 
-                    <div style={{ float: "right", padding: "10px" }}>
-                        <Button variant="contained" color="success">
+                    <div style={{ float: "right", paddingTop: "10px" }}>
+                        <Button variant="contained" color="success" style={{marginRight:"10px"}}>
                             Save
                         </Button>
                         <Button variant="outlined" color="error">

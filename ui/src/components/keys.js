@@ -63,7 +63,7 @@ class KeysComponent extends React.Component {
                 </Grid>
 
                 <Grid item xs={12}>
-                    <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+                    <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', height:"40px" }}>
                         {/* <Orders /> */}
                     </Paper>
                 </Grid>
