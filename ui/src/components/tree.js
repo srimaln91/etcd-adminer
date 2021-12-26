@@ -1,12 +1,10 @@
 import * as React from 'react';
 import TreeView from '@mui/lab/TreeView';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import FolderIcon from '@mui/icons-material/Folder';
 import TreeItem from '@mui/lab/TreeItem';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
+
 
 export default function FSNavigator(props) {
 

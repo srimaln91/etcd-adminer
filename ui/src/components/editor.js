@@ -27,7 +27,7 @@ class EditorComponent extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.etcdKey != prevProps.etcdKey) {
+        if (this.props.etcdKey !== prevProps.etcdKey) {
             axios.get(`http://localhost:8086/api/keys?key=` + this.props.etcdKey, {
             auth: {
                 username: 'root',
