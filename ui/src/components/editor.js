@@ -13,6 +13,8 @@ class EditorComponent extends React.Component {
             key: "",
             value: '// Please select a key',
         }
+
+        this.onChange = this.onChange.bind(this);
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -26,12 +28,11 @@ class EditorComponent extends React.Component {
         return null;
     }
 
-    componentDidUpdate(prevProps) {
-        if (this.props.etcdKey !== prevProps.etcdKey) {
-            axios.get(`http://localhost:8086/api/keys?key=` + this.props.etcdKey, {
+    fetchKey(key){
+        axios.get(`http://localhost:8086/api/keys?key=` + key, {
             auth: {
-                username: 'root',
-                password: 'root@123'
+                username: localStorage.getItem("user"),
+                password: localStorage.getItem("password")
             }
         })
             .then(res => {
@@ -40,22 +41,16 @@ class EditorComponent extends React.Component {
                     value: res.data.value
                 });
             })
+    }
+
+    componentDidUpdate(prevProps) {
+        if (this.props.etcdKey !== prevProps.etcdKey) {
+            this.fetchKey(this.props.etcdKey);
         }
     }
 
     componentDidMount() {
-        axios.get(`http://localhost:8086/api/keys?key=` + this.props.etcdKey, {
-            auth: {
-                username: 'root',
-                password: 'root@123'
-            }
-        })
-            .then(res => {
-                this.setState({
-                    key: res.data.key,
-                    value: res.data.value
-                });
-            })
+        this.fetchKey(this.props.etcdKey);
     }
 
     editorDidMount(editor, monaco) {
@@ -63,7 +58,9 @@ class EditorComponent extends React.Component {
     }
 
     onChange(newValue, e) {
-        console.log('onChange', newValue, e);
+        this.setState({
+            value: newValue
+        })
     }
 
     render() {

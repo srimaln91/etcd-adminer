@@ -31,8 +31,8 @@ class KeysComponent extends React.Component {
     componentDidMount() {
         axios.get(`http://localhost:8086/api/keys`, {
             auth: {
-                username: 'root',
-                password: 'root@123'
+                username: localStorage.getItem("user"),
+                password: localStorage.getItem("password")
             }
         })
             .then(res => {

@@ -9,6 +9,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import axios from 'axios';
 
 class ConnectionComponent extends React.Component {
 
@@ -20,13 +21,18 @@ class ConnectionComponent extends React.Component {
             success: false,
             error: false,
             errorMessage: "Something went wrong!",
-            successMessage: "Success!"
+            successMessage: "Success!",
+            endpoints: "",
+            username: "",
+            password: ""
         }
 
-        this.handleClick = this.handleClick.bind(this);
+        this.handleTest = this.handleTest.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    handleClick() {
+    handleTest() {
         this.setState({
             loading: true,
             tested: false,
@@ -36,18 +42,62 @@ class ConnectionComponent extends React.Component {
             errorMessage: ""
         })
 
-        setTimeout(() => {
-            this.setState({
-                loading: false,
-                tested: true,
-                success: true,
-                successMessage: "Connection succeeded!"
+        axios.post(`http://localhost:8086/api/auth`, null, {
+            auth: {
+                username: this.state.username,
+                password: this.state.password
+            }
+        })
+            .then(res => {
+                if (res.status == 200) {
+                    this.setState({
+                        loading: false,
+                        tested: true,
+                        success: true,
+                        successMessage: "Connection Succeeded!"
+                    })
+                } else {
+                    this.setState({
+                        loading: false,
+                        tested: false,
+                        success: false,
+                        error: true,
+                        successMessage: "",
+                        errorMessage: "Invalid Credentials!"
+                    })
+                }
+            }).catch(err => {
+                this.setState({
+                    loading: false,
+                    tested: false,
+                    success: false,
+                    error: true,
+                    successMessage: "",
+                    errorMessage: "Something Went Wrong!"
+                })
             })
-        }, 1000);
+
     }
 
-    handleSubmit(e) {
-        e.prevendDefault();
+    handleChange(e) {
+        switch(e.target.name){
+            case "endpoints":
+                this.setState({endpoints: e.target.value})
+                break;
+            case "username":
+                this.setState({username: e.target.value})
+                break;
+            case "password":
+                this.setState({password: e.target.value})
+                break;
+            default:
+                return;
+        }
+    }
+
+    handleSubmit() {
+        localStorage.setItem('user', this.state.username);
+        localStorage.setItem('password', this.state.password);
     }
 
     alert(severity, message) {
@@ -88,6 +138,7 @@ class ConnectionComponent extends React.Component {
                                     fullWidth
                                     autoComplete="given-name"
                                     variant="standard"
+                                    onChange={this.handleChange}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -99,6 +150,7 @@ class ConnectionComponent extends React.Component {
                                     fullWidth
                                     autoComplete="user name"
                                     variant="standard"
+                                    onChange={this.handleChange}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
@@ -110,12 +162,13 @@ class ConnectionComponent extends React.Component {
                                     fullWidth
                                     autoComplete="current-password"
                                     variant="standard"
+                                    onChange={this.handleChange}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={12}>
                             <Box sx={{ '& > button': { m: 1, } }}>
                                     <LoadingButton
-                                        onClick={this.handleClick}
+                                        onClick={this.handleTest}
                                         endIcon={<SendIcon />}
                                         loading={this.state.loading}
                                         loadingPosition="end"
