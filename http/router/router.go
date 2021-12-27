@@ -10,8 +10,6 @@ import (
 
 func NewRouter(logger log.Logger) (http.Handler, error) {
 
-	// fs := http.FileServer(http.Dir("./static/"))
-
 	// Init handler
 	jobRequestHandler := handlers.NewHTTPHandler(logger)
 
@@ -20,8 +18,8 @@ func NewRouter(logger log.Logger) (http.Handler, error) {
 	r.HandleFunc("/api/auth", jobRequestHandler.Authenticate).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/api/keys", jobRequestHandler.GetKey).Methods(http.MethodGet, http.MethodOptions).Queries("key", "")
 	r.HandleFunc("/api/keys", jobRequestHandler.GetKeys).Methods(http.MethodGet, http.MethodOptions)
-
-	// r.HandleFunc("/api/job/{id}", jobRequestHandler.GetJob).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/api/keys", jobRequestHandler.UpdateKey).Methods(http.MethodPut, http.MethodOptions)
+	r.HandleFunc("/api/keys", jobRequestHandler.DeleteKey).Methods(http.MethodDelete, http.MethodOptions)
 
 	spa := spaHandler{staticPath: "static", indexPath: "index.html"}
 	r.PathPrefix("/").Handler(spa)

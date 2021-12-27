@@ -9,6 +9,8 @@ import (
 	"github.com/srimaln91/etcd-adminer/config"
 	"github.com/srimaln91/etcd-adminer/etcd"
 	"github.com/srimaln91/etcd-adminer/filetree"
+	"github.com/srimaln91/etcd-adminer/http/request"
+	"github.com/srimaln91/etcd-adminer/http/response"
 	"github.com/srimaln91/etcd-adminer/log"
 	"go.etcd.io/etcd/api/v3/v3rpc/rpctypes"
 	clientv3 "go.etcd.io/etcd/client/v3"
@@ -169,4 +171,114 @@ func (jh *GenericHandler) GetKey(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusOK)
 	rw.Write(response)
 	rw.Header().Add("Content-Type", "application/json")
+}
+
+func (jh *GenericHandler) UpdateKey(rw http.ResponseWriter, r *http.Request) {
+	user, pass, ok := r.BasicAuth()
+	if !ok {
+		rw.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	client, err := etcd.NewClient(config.AppConfig.ETCD.Endpoints, etcd.WithAuth(user, pass))
+	if err != nil {
+		if err == rpctypes.ErrAuthFailed {
+			rw.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	reqDataDecoded := request.CreateKeyRequest{}
+	decoder := json.NewDecoder(r.Body)
+
+	err = decoder.Decode(&reqDataDecoded)
+	if err != nil {
+		rw.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	resp, err := client.Put(r.Context(), reqDataDecoded.Key, reqDataDecoded.Value)
+	if err != nil {
+		if err == rpctypes.ErrAuthFailed {
+			rw.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	responseData := response.UpdateKeyResponse{}
+	responseData.Revision = resp.Header.Revision
+
+	responseBytes, err := json.Marshal(responseData)
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	rw.Write(responseBytes)
+	rw.WriteHeader(http.StatusOK)
+}
+
+func (jh *GenericHandler) DeleteKey(rw http.ResponseWriter, r *http.Request) {
+	user, pass, ok := r.BasicAuth()
+	if !ok {
+		rw.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	client, err := etcd.NewClient(config.AppConfig.ETCD.Endpoints, etcd.WithAuth(user, pass))
+	if err != nil {
+		if err == rpctypes.ErrAuthFailed {
+			rw.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	reqDataDecoded := request.DeleteKeyRequest{}
+	decoder := json.NewDecoder(r.Body)
+
+	err = decoder.Decode(&reqDataDecoded)
+	if err != nil {
+		rw.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	var resp *clientv3.DeleteResponse
+
+	// Delete with a prefix if it is a directory
+	if reqDataDecoded.IsDirectory {
+		resp, err = client.Delete(r.Context(), reqDataDecoded.Key, clientv3.WithPrefix())
+	} else {
+		resp, err = client.Delete(r.Context(), reqDataDecoded.Key)
+	}
+
+	if err != nil {
+		if err == rpctypes.ErrAuthFailed {
+			rw.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	responseBytes, err := json.Marshal(response.UpdateKeyResponse{
+		Revision: resp.Header.Revision,
+	})
+
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	rw.Write(responseBytes)
+	rw.WriteHeader(http.StatusOK)
 }
