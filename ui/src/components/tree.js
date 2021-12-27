@@ -39,7 +39,7 @@ export default function FSNavigator(props) {
     <TreeView
       aria-label="rich object"
       defaultCollapseIcon={<FolderOpenIcon sx={{color:"#f1c40f"}}/>}
-      defaultExpanded={['1']}
+      defaultExpanded={['1', '2']}
       defaultEndIcon={<InsertDriveFileIcon sx={{ color: "#f1c40f" }}/>}
       defaultExpandIcon={<FolderIcon sx={{color:"#f1c40f"}} />}
       sx={{ height: "100%", flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}

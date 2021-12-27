@@ -154,12 +154,13 @@ func (jh *GenericHandler) GetKey(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respData := struct {
-		Key   string `json:"key"`
-		Value string `json:"value"`
-	}{
-		Key:   string(etcdKey.Kvs[0].Key),
-		Value: string(etcdKey.Kvs[0].Value),
+	respData := response.Key{
+		Key:            string(etcdKey.Kvs[0].Key),
+		Value:          string(etcdKey.Kvs[0].Value),
+		CreateRevision: etcdKey.Kvs[0].CreateRevision,
+		ModRevision:    etcdKey.Kvs[0].ModRevision,
+		Version:        etcdKey.Kvs[0].Version,
+		Lease:          etcdKey.Kvs[0].Lease,
 	}
 
 	response, err := json.Marshal(respData)
