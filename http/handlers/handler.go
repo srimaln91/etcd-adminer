@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/srimaln91/etcd-adminer/config"
 	"github.com/srimaln91/etcd-adminer/etcd"
 	"github.com/srimaln91/etcd-adminer/filetree"
 	"github.com/srimaln91/etcd-adminer/http/request"
@@ -34,7 +33,19 @@ func (jh *GenericHandler) Authenticate(rw http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	_, err := etcd.NewClient(config.AppConfig.ETCD.Endpoints, etcd.WithAuth(user, pass))
+	endpointString := r.Header.Get("X-Endpoints")
+	if endpointString == "" {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	endpoints := strings.Split(endpointString, ",")
+	if len(endpointString) < 1 {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	_, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
 	if err != nil {
 		if err == rpctypes.ErrAuthFailed {
 			rw.WriteHeader(http.StatusForbidden)
@@ -73,7 +84,19 @@ func (jh *GenericHandler) GetKeys(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client, err := etcd.NewClient(config.AppConfig.ETCD.Endpoints, etcd.WithAuth(user, pass))
+	endpointString := r.Header.Get("X-Endpoints")
+	if endpointString == "" {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	endpoints := strings.Split(endpointString, ",")
+	if len(endpointString) < 1 {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	client, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
 	if err != nil {
 		if err == rpctypes.ErrAuthFailed {
 			rw.WriteHeader(http.StatusForbidden)
@@ -124,7 +147,19 @@ func (jh *GenericHandler) GetKey(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client, err := etcd.NewClient(config.AppConfig.ETCD.Endpoints, etcd.WithAuth(user, pass))
+	endpointString := r.Header.Get("X-Endpoints")
+	if endpointString == "" {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	endpoints := strings.Split(endpointString, ",")
+	if len(endpointString) < 1 {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	client, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
 	if err != nil {
 		if err == rpctypes.ErrAuthFailed {
 			rw.WriteHeader(http.StatusForbidden)
@@ -181,7 +216,19 @@ func (jh *GenericHandler) UpdateKey(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client, err := etcd.NewClient(config.AppConfig.ETCD.Endpoints, etcd.WithAuth(user, pass))
+	endpointString := r.Header.Get("X-Endpoints")
+	if endpointString == "" {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	endpoints := strings.Split(endpointString, ",")
+	if len(endpointString) < 1 {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	client, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
 	if err != nil {
 		if err == rpctypes.ErrAuthFailed {
 			rw.WriteHeader(http.StatusForbidden)
@@ -232,7 +279,19 @@ func (jh *GenericHandler) DeleteKey(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client, err := etcd.NewClient(config.AppConfig.ETCD.Endpoints, etcd.WithAuth(user, pass))
+	endpointString := r.Header.Get("X-Endpoints")
+	if endpointString == "" {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	endpoints := strings.Split(endpointString, ",")
+	if len(endpointString) < 1 {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	client, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
 	if err != nil {
 		if err == rpctypes.ErrAuthFailed {
 			rw.WriteHeader(http.StatusForbidden)

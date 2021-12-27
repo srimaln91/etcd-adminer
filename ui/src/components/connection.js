@@ -52,10 +52,13 @@ class ConnectionComponent extends React.Component {
             errorMessage: ""
         })
 
-        axios.post(`http://localhost:8086/api/auth`, null, {
+        axios.post(`/api/auth`, null, {
             auth: {
                 username: this.state.username,
                 password: this.state.password
+            },
+            headers: {
+                "X-Endpoints": this.state.endpoints
             }
         })
             .then(res => {
@@ -124,10 +127,10 @@ class ConnectionComponent extends React.Component {
     useSession(session){
         this.sessionStore.SetActiveSession(session);
 
-        localStorage.setItem('endpoints', this.state.endpoints);
-        localStorage.setItem('user', this.state.username);
-        localStorage.setItem('password', this.state.password);
-        localStorage.setItem('name', this.state.name);
+        localStorage.setItem('endpoints', session.Endpoints);
+        localStorage.setItem('user', session.UserName);
+        localStorage.setItem('password', session.Password);
+        localStorage.setItem('name', session.Name);
     }
 
     deleteSession(session){
@@ -139,12 +142,18 @@ class ConnectionComponent extends React.Component {
     }
 
     componentDidMount() {
+
+        let sessions = this.sessionStore.GetAll();
+        if (sessions === null) {
+            sessions = {};
+        }
+
         this.setState({
             endpoints: localStorage.getItem('endpoints'),
             username: localStorage.getItem('user'),
             password: localStorage.getItem('password'),
             name: localStorage.getItem('name'),
-            sessions: this.sessionStore.GetAll()
+            sessions: sessions
         })
     }
 

@@ -11,7 +11,7 @@ class KeysComponent extends React.Component {
     constructor() {
         super()
         this.state = {
-            activeKey: "/system/test3/subdir/level2dir",
+            activeKey: "/",
             keys: {
                 id: 'root',
                 name: 'Parent',
@@ -29,10 +29,13 @@ class KeysComponent extends React.Component {
     }
 
     componentDidMount() {
-        axios.get(`http://localhost:8086/api/keys`, {
+        axios.get(`/api/keys`, {
             auth: {
                 username: localStorage.getItem("user"),
                 password: localStorage.getItem("password")
+            },
+            headers: {
+                "X-Endpoints": localStorage.getItem("endpoints")
             }
         })
             .then(res => {

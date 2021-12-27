@@ -34,10 +34,13 @@ class EditorComponent extends React.Component {
     }
 
     fetchKey(key){
-        axios.get(`http://localhost:8086/api/keys?key=` + key, {
+        axios.get(`/api/keys?key=` + key, {
             auth: {
                 username: localStorage.getItem("user"),
                 password: localStorage.getItem("password")
+            },
+            headers: {
+                "X-Endpoints": localStorage.getItem("endpoints")
             }
         })
             .then(res => {
@@ -54,13 +57,16 @@ class EditorComponent extends React.Component {
     }
 
     save(){
-        axios.put(`http://localhost:8086/api/keys`, {
+        axios.put(`/api/keys`, {
             key: this.state.key,
             value: this.state.value
         }, {
             auth: {
                 username: localStorage.getItem("user"),
                 password: localStorage.getItem("password")
+            },
+            headers: {
+                "X-Endpoints": localStorage.getItem("endpoints")
             }
         })
             .then(res => {
