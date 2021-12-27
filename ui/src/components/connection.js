@@ -10,6 +10,9 @@ import SendIcon from '@mui/icons-material/Send';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import axios from 'axios';
+import ConnectionCard from './connectionCard';
+import Divider from '@mui/material/Divider';
+import { SessionStore, Session } from '../storage/session'
 
 class ConnectionComponent extends React.Component {
 
@@ -22,14 +25,21 @@ class ConnectionComponent extends React.Component {
             error: false,
             errorMessage: "Something went wrong!",
             successMessage: "Success!",
+            name: "",
             endpoints: "",
             username: "",
-            password: ""
+            password: "",
+            sessions: {},
+            activeConnection: {}
         }
+
+        this.sessionStore = new SessionStore();
 
         this.handleTest = this.handleTest.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.useSession = this.useSession.bind(this);
+        this.deleteSession = this.deleteSession.bind(this);
     }
 
     handleTest() {
@@ -80,15 +90,18 @@ class ConnectionComponent extends React.Component {
     }
 
     handleChange(e) {
-        switch(e.target.name){
+        switch (e.target.name) {
             case "endpoints":
-                this.setState({endpoints: e.target.value})
+                this.setState({ endpoints: e.target.value })
                 break;
             case "username":
-                this.setState({username: e.target.value})
+                this.setState({ username: e.target.value })
                 break;
             case "password":
-                this.setState({password: e.target.value})
+                this.setState({ password: e.target.value })
+                break;
+            case "name":
+                this.setState({ name: e.target.value })
                 break;
             default:
                 return;
@@ -96,8 +109,43 @@ class ConnectionComponent extends React.Component {
     }
 
     handleSubmit() {
+        let session = new Session(
+            this.state.name,
+            this.state.endpoints,
+            this.state.username,
+            this.state.password
+        );
+        this.sessionStore.Add(session);
+        this.setState({
+            sessions: this.sessionStore.GetAll()
+        });
+    }
+
+    useSession(session){
+        this.sessionStore.SetActiveSession(session);
+
+        localStorage.setItem('endpoints', this.state.endpoints);
         localStorage.setItem('user', this.state.username);
         localStorage.setItem('password', this.state.password);
+        localStorage.setItem('name', this.state.name);
+    }
+
+    deleteSession(session){
+        this.sessionStore.Delete(session);
+
+        this.setState({
+            sessions: this.sessionStore.GetAll()
+        })
+    }
+
+    componentDidMount() {
+        this.setState({
+            endpoints: localStorage.getItem('endpoints'),
+            username: localStorage.getItem('user'),
+            password: localStorage.getItem('password'),
+            name: localStorage.getItem('name'),
+            sessions: this.sessionStore.GetAll()
+        })
     }
 
     alert(severity, message) {
@@ -122,19 +170,33 @@ class ConnectionComponent extends React.Component {
                         }}
                     >
                         <Typography variant="h6" gutterBottom>
-                            Connection
+                            New Connection
                         </Typography>
                         <Grid container spacing={3}>
-                        <Grid item xs={12} sm={12} >
-                            {this.state.success === true && this.state.successMessage !== "" ? this.alert("success", this.state.successMessage): null}
-                            {this.state.error === true && this.state.errorMessage !== "" ? this.alert("error", this.state.errorMessage): null}
-                        </Grid>
+                            <Grid item xs={12} sm={12} >
+                                {this.state.success === true && this.state.successMessage !== "" ? this.alert("success", this.state.successMessage) : null}
+                                {this.state.error === true && this.state.errorMessage !== "" ? this.alert("error", this.state.errorMessage) : null}
+                            </Grid>
+                            <Grid item xs={12} sm={12}>
+                                <TextField
+                                    required
+                                    id="name"
+                                    name="name"
+                                    label="Name"
+                                    value={this.state.name}
+                                    fullWidth
+                                    autoComplete="given-name"
+                                    variant="standard"
+                                    onChange={this.handleChange}
+                                />
+                            </Grid>
                             <Grid item xs={12} sm={12}>
                                 <TextField
                                     required
                                     id="endpoints"
                                     name="endpoints"
                                     label="Endpoints"
+                                    value={this.state.endpoints}
                                     fullWidth
                                     autoComplete="given-name"
                                     variant="standard"
@@ -147,6 +209,7 @@ class ConnectionComponent extends React.Component {
                                     id="username"
                                     name="username"
                                     label="User Name"
+                                    value={this.state.username}
                                     fullWidth
                                     autoComplete="user name"
                                     variant="standard"
@@ -159,6 +222,7 @@ class ConnectionComponent extends React.Component {
                                     name="password"
                                     label="Password"
                                     type="password"
+                                    value={this.state.password}
                                     fullWidth
                                     autoComplete="current-password"
                                     variant="standard"
@@ -166,7 +230,7 @@ class ConnectionComponent extends React.Component {
                                 />
                             </Grid>
                             <Grid item xs={12} sm={12}>
-                            <Box sx={{ '& > button': { m: 1, } }}>
+                                <Box sx={{ '& > button': { m: 1, } }}>
                                     <LoadingButton
                                         onClick={this.handleTest}
                                         endIcon={<SendIcon />}
@@ -181,6 +245,29 @@ class ConnectionComponent extends React.Component {
                                         Save
                                     </Button>
                                 </Box>
+                            </Grid>
+                            
+                            <Grid item xs={12} sm={12}>
+                                <Divider />
+                                <Typography variant="h6" sx={{mt: 3}}>
+                                    Saved Connections
+                                </Typography>
+                            </Grid>
+                            <Grid container item xs={12} sm={12}>
+                                    {Object.keys(this.state.sessions).map((key) => {
+                                        let conn = this.state.sessions[key];
+                                        return (
+                                            <Grid item xs={12} sm={6} md={4} lg={4}>
+                                                <React.Fragment key={conn.Name}>
+                                                    <ConnectionCard
+                                                        connection={conn}
+                                                        useSession={this.useSession}
+                                                        deleteSession={this.deleteSession}
+                                                    />
+                                                </React.Fragment>
+                                            </Grid>
+                                        );
+                                    })}
                             </Grid>
                         </Grid>
                     </Paper>

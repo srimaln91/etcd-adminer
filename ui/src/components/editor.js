@@ -119,7 +119,7 @@ class EditorComponent extends React.Component {
                         <Item>Create Revision: {this.state.remoteKey.createRevision} </Item>
                         <Item>Mod Revision: {this.state.remoteKey.modRevision}</Item>
                         <Item>Version: {this.state.remoteKey.version}</Item>
-                        <Item>Lease: { this.state.remoteKey.lease == 0 ? "None": this.state.remoteKey.lease }</Item>
+                        <Item>Lease: { this.state.remoteKey.lease === 0 ? "None": this.state.remoteKey.lease }</Item>
                     </Stack>
                 </Paper>
                 <div>
