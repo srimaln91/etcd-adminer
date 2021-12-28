@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "ETCD Adminer",
+  "name": "Administration tool for ETCD",
   "icons": [
     {
       "src": "favicon.ico",

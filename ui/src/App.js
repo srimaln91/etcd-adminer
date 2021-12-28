@@ -14,12 +14,11 @@ import Container from '@mui/material/Container';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import List from '@mui/material/List';
-import { mainListItems } from './listitems';
+import NavMenu from './components/navMenu';
 import KeysComponent from './components/keys';
 import ConnectionComponent from './components/connection';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import axios from 'axios';
+import Paper from '@mui/material/Paper';
 
 const drawerWidth = 240;
 
@@ -77,86 +76,89 @@ function App() {
 
   return (
     <ThemeProvider theme={mdTheme}>
-      <Box sx={{ display: 'flex' }}>
-        <CssBaseline />
-        <AppBar position="absolute" open={open}>
-          <Toolbar
-            sx={{
-              pr: '24px', // keep right padding when drawer closed
-            }}
-          >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
+      <BrowserRouter>
+        <Box sx={{ display: 'flex' }}>
+          <CssBaseline />
+          <AppBar position="absolute" open={open}>
+            <Toolbar
               sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
+                pr: '24px', // keep right padding when drawer closed
               }}
             >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              sx={{ flexGrow: 1 }}
+              <IconButton
+                edge="start"
+                color="inherit"
+                aria-label="open drawer"
+                onClick={toggleDrawer}
+                sx={{
+                  marginRight: '36px',
+                  ...(open && { display: 'none' }),
+                }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Typography
+                component="h1"
+                variant="h6"
+                color="inherit"
+                noWrap
+                sx={{ flexGrow: 1 }}
+              >
+                ETCD Adminer
+              </Typography>
+              <IconButton color="inherit">
+                <Badge badgeContent={4} color="secondary">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+            </Toolbar>
+          </AppBar>
+          <Drawer variant="permanent" open={open}>
+            <Toolbar
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                px: [1],
+              }}
             >
-              ETCD Adminer
-            </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <Drawer variant="permanent" open={open}>
-          <Toolbar
+              <Paper variant="outlined" sx={{maxHeight:50}}>
+                <img src="images/logo100.png" height="50px" width="50px"/>
+              </Paper>
+
+              <IconButton onClick={toggleDrawer}>
+                <ChevronLeftIcon />
+              </IconButton>
+
+            </Toolbar>
+            <Divider />
+            <NavMenu />
+          </Drawer>
+          <Box
+            component="main"
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              px: [1],
+              backgroundColor: (theme) =>
+                theme.palette.mode === 'light'
+                  ? theme.palette.grey[100]
+                  : theme.palette.grey[900],
+              flexGrow: 1,
+              height: '100vh',
+              overflow: 'auto',
             }}
           >
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
-          <Divider />
-          <List>{mainListItems}</List>
-          {/* <Divider /> */}
-          {/* <List>{secondaryListItems}</List> */}
-        </Drawer>
-        <Box
-          component="main"
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            height: '100vh',
-            overflow: 'auto',
-          }}
-        >
-          <Toolbar />
-          <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
-            <BrowserRouter>
+            <Toolbar />
+            <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
               <Routes>
                 <Route path="/" element={<KeysComponent />} />
                 <Route path="connection" element={<ConnectionComponent />} />
                 <Route path="keys" element={<KeysComponent />} />
               </Routes>
-            </BrowserRouter>
-          </Container>
+            </Container>
+          </Box>
         </Box>
-      </Box>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }
 
-export default App
+export default App;

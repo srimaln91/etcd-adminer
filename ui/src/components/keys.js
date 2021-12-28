@@ -22,7 +22,6 @@ class KeysComponent extends React.Component {
     }
 
     setActiveKey(key) {
-        console.log(key);
         this.setState({
             activeKey: key
         })
