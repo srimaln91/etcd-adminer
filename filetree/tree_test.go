@@ -5,27 +5,27 @@ import (
 )
 
 func TestNewTree(t *testing.T) {
-	f := NewNode("/")
+	f := NewFileTree("/")
 	if f == nil {
 		t.Error("invalid result")
 	}
 }
 
 func TestCreatePath(t *testing.T) {
-	f := NewNode("/")
+	f := NewFileTree("/")
 	if f == nil {
 		t.Error("invalid result")
 	}
 
 	path := []string{"system", "app1", "db"}
-	leaf := f.SetupPath(path)
+	leaf := f.SetupPath(f.Root, path)
 	if leaf.Name != "db" {
 		t.Error("incorret output")
 	}
 }
 
 func TestAddFile(t *testing.T) {
-	f := NewNode("/")
+	f := NewFileTree("/")
 	if f == nil {
 		t.Error("invalid result")
 	}
@@ -34,7 +34,7 @@ func TestAddFile(t *testing.T) {
 	filename := "testfile"
 	// fileContent := []byte("test byte array")
 
-	f.AddFile(path, filename)
+	f.AddFile(f.Root, path, filename)
 	// if !bytes.Equal(fileContent, file.Content.([]byte)) {
 	// 	t.Error("incorrect result")
 	// }

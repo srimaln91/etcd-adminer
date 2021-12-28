@@ -1,9 +1,5 @@
 package filetree
 
-import (
-	"sync/atomic"
-)
-
 var counter int64
 
 type Node struct {
@@ -15,9 +11,21 @@ type Node struct {
 	AbsPath  string           `json:"abspath"`
 }
 
-func NewNode(name string) *Node {
+type FileTree struct {
+	Root      *Node
+	NodeCount int64
+}
+
+func NewFileTree(basename string) *FileTree {
+	return &FileTree{
+		Root:      NewNode(basename, 1),
+		NodeCount: 0,
+	}
+}
+
+func NewNode(name string, ID int64) *Node {
 	return &Node{
-		ID:       atomic.AddInt64(&counter, 1),
+		ID:       ID,
 		Name:     name,
 		Type:     "directory",
 		NodesMap: make(map[string]*Node),
@@ -26,19 +34,20 @@ func NewNode(name string) *Node {
 	}
 }
 
-func (f *Node) NewFolder(name string) *Node {
-	folder := NewNode(name)
+func (f *Node) NewFolder(name string, ID int64) *Node {
+	folder := NewNode(name, ID)
 	f.NodesMap[name] = folder
 	f.Nodes = append(f.Nodes, folder)
 	return folder
 }
 
-func (f *Node) SetupPath(path []string) *Node {
-	leafNode := f
+func (ft *FileTree) SetupPath(baseNode *Node, path []string) *Node {
+	leafNode := baseNode
 
 	for _, p := range path {
 		if _, ok := leafNode.NodesMap[p]; !ok {
-			folder := leafNode.NewFolder(p)
+			ft.NodeCount++
+			folder := leafNode.NewFolder(p, ft.NodeCount)
 
 			folder.AbsPath = leafNode.AbsPath + "/" + p
 
@@ -51,12 +60,13 @@ func (f *Node) SetupPath(path []string) *Node {
 	return leafNode
 }
 
-func (f *Node) AddFile(path []string, filename string) *Node {
+func (ft *FileTree) AddFile(baseNode *Node, path []string, filename string) *Node {
 	// Setup the path
-	leafNode := f.SetupPath(path)
+	leafNode := ft.SetupPath(baseNode, path)
 
+	ft.NodeCount++
 	file := &Node{
-		ID:      atomic.AddInt64(&counter, 1),
+		ID:      ft.NodeCount,
 		Name:    filename,
 		Type:    "file",
 		AbsPath: leafNode.AbsPath + "/" + filename,

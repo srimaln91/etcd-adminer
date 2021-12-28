@@ -19,6 +19,7 @@ class KeysComponent extends React.Component {
         }
 
         this.setActiveKey = this.setActiveKey.bind(this);
+        this.fetchKeys = this.fetchKeys.bind(this);
     }
 
     setActiveKey(key) {
@@ -27,7 +28,19 @@ class KeysComponent extends React.Component {
         })
     }
 
-    componentDidMount() {
+    createFile(path, content){
+        console.log(path + "-" + content);
+    }
+
+    createDirectory(path){
+        console.log(path);
+    }
+
+    deleteKey(path){
+        console.log(path);
+    }
+
+    fetchKeys(){
         axios.get(`/api/keys`, {
             auth: {
                 username: localStorage.getItem("user"),
@@ -36,11 +49,14 @@ class KeysComponent extends React.Component {
             headers: {
                 "X-Endpoints": localStorage.getItem("endpoints")
             }
-        })
-            .then(res => {
+        }).then(res => {
                 const keys = res.data;
+                console.log(keys);
                 this.setState({ keys: keys });
-            })
+        })
+    }
+    componentDidMount() {
+        this.fetchKeys();
     }
 
     render() {
@@ -56,7 +72,14 @@ class KeysComponent extends React.Component {
                             height: 800,
                         }}
                     >
-                        <FSNavigator keys={this.state.keys} onKeyClick={this.setActiveKey} />
+                        <FSNavigator
+                            keys={this.state.keys}
+                            onKeyClick={this.setActiveKey}
+                            fetchKeys={this.fetchKeys}
+                            createFile={this.createFile}
+                            createDirectory={this.createDirectory}
+                            deleteKey={this.deleteKey}
+                        />
                     </Paper>
                 </Grid>
 

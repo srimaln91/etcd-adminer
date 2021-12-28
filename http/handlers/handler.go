@@ -113,7 +113,7 @@ func (jh *GenericHandler) GetKeys(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rootDirectory := filetree.NewNode("/")
+	fileTree := filetree.NewFileTree("/")
 
 	for _, k := range keys.Kvs {
 		segments := strings.Split(string(k.Key), "/")
@@ -124,11 +124,12 @@ func (jh *GenericHandler) GetKeys(rw http.ResponseWriter, r *http.Request) {
 		path := segments[:length-1]
 		filename := segments[length-1]
 
-		rootDirectory.AddFile(path, filename)
+		fileTree.AddFile(fileTree.Root, path, filename)
 	}
 
-	respData, err := json.Marshal(rootDirectory)
+	respData, err := json.Marshal(fileTree.Root)
 	if err != nil {
+		jh.logger.Error(r.Context(), err.Error())
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}

@@ -16,9 +16,12 @@ import AddIcon from '@mui/icons-material/Add';
 export default function FSNavigator(props) {
 
   const [contextMenu, setContextMenu] = React.useState(null);
+  const [contextMenuSelectedNode, setContextMenuSelectedNode] = React.useState(null);
 
-  const handleContextMenu = (event) => {
+  const handleContextMenu = (event, node) => {
     event.preventDefault();
+    event.stopPropagation();
+
     setContextMenu(
       contextMenu === null
         ? {
@@ -30,10 +33,30 @@ export default function FSNavigator(props) {
           // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
           null,
     );
+
+    setContextMenuSelectedNode(node);
+    console.log(node);
   };
 
-  const handleClose = () => {
+  const handleClose = (e) => {
     setContextMenu(null);
+    // console.log(e.target);
+    switch(e.target.parentElement.parentElement.getAttribute("data-id")) {
+      case "refresh":
+        props.fetchKeys();
+        break;
+      case "newfile":
+        props.createFile(contextMenuSelectedNode.abspath, "test content");
+        break;
+      case "delete":
+        props.deleteKey(contextMenuSelectedNode.abspath);
+        break;
+      case "newdir":
+        props.createDirectory("test");
+        break;
+      default:
+        console.log("no menu action defined");
+    }
   };
 
   const handler = (event) => {
@@ -47,12 +70,13 @@ export default function FSNavigator(props) {
 
   const renderTree = (nodes) => (
     <TreeItem
-      key={nodes.abspath}
+      key={nodes.id}
       nodeId={nodes.id.toString()}
       label={nodes.name}
       type={nodes.type}
       data-index={nodes.abspath}
       onClick={handler}
+      onContextMenu={event => handleContextMenu(event, nodes)}
     >
       {Array.isArray(nodes.children)
         ? nodes.children.map((node) => renderTree(node))
@@ -61,11 +85,11 @@ export default function FSNavigator(props) {
   );
 
   return (
-    <div onContextMenu={handleContextMenu} style={{ cursor: 'context-menu' }}>
+    <div>
       <TreeView
         aria-label="rich object"
         defaultCollapseIcon={<FolderOpenIcon sx={{ color: "#f1c40f" }} />}
-        defaultExpanded={['1', '2']}
+        defaultExpanded={['1']}
         defaultEndIcon={<InsertDriveFileIcon sx={{ color: "#f1c40f" }} />}
         defaultExpandIcon={<FolderIcon sx={{ color: "#f1c40f" }} />}
         sx={{ height: "100%", flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
@@ -82,25 +106,25 @@ export default function FSNavigator(props) {
             : undefined
         }
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleClose} data-id="newfile">
           <ListItemIcon>
             <AddIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>New File</ListItemText>
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleClose} data-id="newdir">
         <ListItemIcon>
             <CreateNewFolderIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>New Directory</ListItemText>
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleClose} data-id="delete">
         <ListItemIcon>
             <DeleteIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Delete</ListItemText>
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleClose} data-id="refresh">
         <ListItemIcon>
             <RefreshIcon fontSize="small" />
           </ListItemIcon>
