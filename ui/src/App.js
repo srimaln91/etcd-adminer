@@ -19,6 +19,8 @@ import KeysComponent from './components/keys';
 import ConnectionComponent from './components/connection';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Paper from '@mui/material/Paper';
+import ClusterInfo from './components/cluster';
+import axios from 'axios';
 
 const drawerWidth = 240;
 
@@ -74,6 +76,10 @@ function App() {
     setOpen(!open);
   };
 
+  if (process.env.NODE_ENV === "development") {
+    axios.defaults.baseURL = "http://localhost:6060/";
+  }
+
   return (
     <ThemeProvider theme={mdTheme}>
       <BrowserRouter>
@@ -122,7 +128,7 @@ function App() {
                 px: [1],
               }}
             >
-              <Paper variant="outlined" sx={{maxHeight:50}}>
+              <Paper variant="outline" sx={{maxHeight:50}}>
                 <img src="images/logo100.png" height="50px" width="50px"/>
               </Paper>
 
@@ -151,6 +157,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<KeysComponent />} />
                 <Route path="connection" element={<ConnectionComponent />} />
+                <Route path="cluster" element={<ClusterInfo />} />
                 <Route path="keys" element={<KeysComponent />} />
               </Routes>
             </Container>

@@ -20,6 +20,7 @@ func NewRouter(logger log.Logger) (http.Handler, error) {
 	r.HandleFunc("/api/keys", jobRequestHandler.GetKeys).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/api/keys", jobRequestHandler.UpdateKey).Methods(http.MethodPut, http.MethodOptions)
 	r.HandleFunc("/api/keys", jobRequestHandler.DeleteKey).Methods(http.MethodDelete, http.MethodOptions)
+	r.HandleFunc("/api/clusterinfo", jobRequestHandler.ClusterInfo).Methods(http.MethodGet, http.MethodOptions)
 
 	spa := spaHandler{staticPath: "static", indexPath: "index.html"}
 	r.PathPrefix("/").Handler(spa)
