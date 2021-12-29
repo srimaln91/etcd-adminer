@@ -42,7 +42,7 @@ COPY --from=build_ui /tmp/ui/build /app/static
 WORKDIR /app
 
 # This container exposes port 8080 to the outside world
-EXPOSE 8086
+EXPOSE 8080
 
 # Run the binary program produced by `go install`
 CMD ["/app/etcd-adminer-linux-amd64"]

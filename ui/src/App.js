@@ -77,7 +77,7 @@ function App() {
   };
 
   if (process.env.NODE_ENV === "development") {
-    axios.defaults.baseURL = "http://localhost:6060/";
+    axios.defaults.baseURL = "http://localhost:8080/";
   }
 
   return (
