@@ -48,10 +48,30 @@ export default function ClusterInfo(props) {
                     </Typography>
                     <Grid container spacing={3}>
                         <Grid container item xs={12} sm={12}>
-                            <Typography>Cluster ID: {clusterInfo.clusterID}</Typography>
-                            <Typography>Member ID: {clusterInfo.memberID}</Typography>
-                            <Typography>Raft Term: {clusterInfo.raftTerm}</Typography>
-                            <Typography>Revision: {clusterInfo.revision}</Typography>
+                            <Grid item xs={4}>
+                                <Typography>Cluster ID:</Typography>
+                            </Grid>
+                            <Grid item xs={8}>
+                                <Typography>{clusterInfo.clusterID}</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Typography>Member ID:</Typography>
+                            </Grid>
+                            <Grid item xs={8}>
+                                <Typography>{clusterInfo.memberID}</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Typography>Raft Term:</Typography>
+                            </Grid>
+                            <Grid item xs={8}>
+                                <Typography>{clusterInfo.raftTerm}</Typography>
+                            </Grid>
+                            <Grid item xs={4}>
+                                <Typography>Revision:</Typography>
+                            </Grid>
+                            <Grid item xs={8}>
+                                <Typography>{clusterInfo.revision}</Typography>
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Paper>
