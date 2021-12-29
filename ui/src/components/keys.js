@@ -28,19 +28,37 @@ class KeysComponent extends React.Component {
         })
     }
 
-    createFile(path, content){
+    createFile(path, content) {
         console.log(path + "-" + content);
     }
 
-    createDirectory(path){
+    createDirectory(path) {
         console.log(path);
     }
 
-    deleteKey(path){
-        console.log(path);
+    deleteKey(node) {
+        console.log("delete");
+        console.log(node);
+        axios.delete(`/api/keys`, {
+            auth: {
+                username: localStorage.getItem("user"),
+                password: localStorage.getItem("password")
+            },
+            headers: {
+                "X-Endpoints": localStorage.getItem("endpoints")
+            },
+            data: {
+                key: node.abspath,
+                isDirectory: node.type === "directory"
+            }
+        }).then(res => {
+            const data = res.data;
+            console.log(data);
+            this.fetchKeys();
+        })
     }
 
-    fetchKeys(){
+    fetchKeys() {
         axios.get(`/api/keys`, {
             auth: {
                 username: localStorage.getItem("user"),
@@ -50,49 +68,52 @@ class KeysComponent extends React.Component {
                 "X-Endpoints": localStorage.getItem("endpoints")
             }
         }).then(res => {
-                const keys = res.data;
-                console.log(keys);
-                this.setState({ keys: keys });
+            const keys = res.data;
+            console.log(keys);
+            this.setState({ keys: keys });
         })
     }
+
     componentDidMount() {
         this.fetchKeys();
     }
 
     render() {
         return (
-            <Grid container spacing={3}>
+            <React.Fragment>
+                <Grid container spacing={3}>
 
-                <Grid item xs={12} md={4} lg={3}>
-                    <Paper
-                        sx={{
-                            p: 2,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            height: 800,
-                        }}
-                    >
-                        <FSNavigator
-                            keys={this.state.keys}
-                            onKeyClick={this.setActiveKey}
-                            fetchKeys={this.fetchKeys}
-                            createFile={this.createFile}
-                            createDirectory={this.createDirectory}
-                            deleteKey={this.deleteKey}
-                        />
-                    </Paper>
-                </Grid>
+                    <Grid item xs={12} md={4} lg={3}>
+                        <Paper
+                            sx={{
+                                p: 2,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                height: 800,
+                            }}
+                        >
+                            <FSNavigator
+                                keys={this.state.keys}
+                                onKeyClick={this.setActiveKey}
+                                fetchKeys={this.fetchKeys}
+                                createFile={this.createFile}
+                                createDirectory={this.createDirectory}
+                                deleteKey={this.deleteKey}
+                            />
+                        </Paper>
+                    </Grid>
 
-                <Grid item xs={12} md={8} lg={9}>
-                    <EditorComponent etcdKey={this.state.activeKey} />
-                </Grid>
+                    <Grid item xs={12} md={8} lg={9}>
+                        <EditorComponent etcdKey={this.state.activeKey} />
+                    </Grid>
 
-                <Grid item xs={12}>
-                    <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', height:"40px" }}>
-                        {/* <Orders /> */}
-                    </Paper>
+                    <Grid item xs={12}>
+                        <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', height: "40px" }}>
+                            {/* <Orders /> */}
+                        </Paper>
+                    </Grid>
                 </Grid>
-            </Grid>
+            </React.Fragment>
         )
     }
 }

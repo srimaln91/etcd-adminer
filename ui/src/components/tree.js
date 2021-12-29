@@ -12,10 +12,12 @@ import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AddIcon from '@mui/icons-material/Add';
+import ConfirmationDialog from './dialog';
 
 export default function FSNavigator(props) {
 
   const [contextMenu, setContextMenu] = React.useState(null);
+  const [confirmationDialogOpen, seconfirmationDialogOpen] = React.useState(false);
   const [contextMenuSelectedNode, setContextMenuSelectedNode] = React.useState(null);
 
   const handleContextMenu = (event, node) => {
@@ -25,13 +27,13 @@ export default function FSNavigator(props) {
     setContextMenu(
       contextMenu === null
         ? {
-            mouseX: event.clientX - 2,
-            mouseY: event.clientY - 4,
-          }
+          mouseX: event.clientX - 2,
+          mouseY: event.clientY - 4,
+        }
         : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
-          // Other native context menus might behave different.
-          // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
-          null,
+        // Other native context menus might behave different.
+        // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
+        null,
     );
 
     setContextMenuSelectedNode(node);
@@ -41,7 +43,7 @@ export default function FSNavigator(props) {
   const handleClose = (e) => {
     setContextMenu(null);
     // console.log(e.target);
-    switch(e.target.parentElement.parentElement.getAttribute("data-id")) {
+    switch (e.target.parentElement.parentElement.getAttribute("data-id")) {
       case "refresh":
         props.fetchKeys();
         break;
@@ -49,7 +51,7 @@ export default function FSNavigator(props) {
         props.createFile(contextMenuSelectedNode.abspath, "test content");
         break;
       case "delete":
-        props.deleteKey(contextMenuSelectedNode.abspath);
+        seconfirmationDialogOpen(true);
         break;
       case "newdir":
         props.createDirectory("test");
@@ -84,6 +86,22 @@ export default function FSNavigator(props) {
     </TreeItem>
   );
 
+  const onConfirmationDialogCancel = () => {
+    seconfirmationDialogOpen(false)
+  }
+
+  const onConfirmationDialogConfirm = () => {
+    seconfirmationDialogOpen(false);
+    props.deleteKey(contextMenuSelectedNode);
+  }
+
+  const getDeleteDialogContent = () => {
+    if (contextMenuSelectedNode === null) {
+      return ""
+    }
+    return "Do you really want to delete key " + contextMenuSelectedNode.abspath + " ?"
+  }
+
   return (
     <div>
       <TreeView
@@ -113,24 +131,32 @@ export default function FSNavigator(props) {
           <ListItemText>New File</ListItemText>
         </MenuItem>
         <MenuItem onClick={handleClose} data-id="newdir">
-        <ListItemIcon>
+          <ListItemIcon>
             <CreateNewFolderIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>New Directory</ListItemText>
         </MenuItem>
         <MenuItem onClick={handleClose} data-id="delete">
-        <ListItemIcon>
+          <ListItemIcon>
             <DeleteIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Delete</ListItemText>
         </MenuItem>
         <MenuItem onClick={handleClose} data-id="refresh">
-        <ListItemIcon>
+          <ListItemIcon>
             <RefreshIcon fontSize="small" />
           </ListItemIcon>
           <ListItemText>Refresh</ListItemText>
         </MenuItem>
       </Menu>
+
+      <ConfirmationDialog
+        open={confirmationDialogOpen}
+        onCancel={onConfirmationDialogCancel}
+        onConfirm={onConfirmationDialogConfirm}
+        title={"Delete Key?"}
+        content={getDeleteDialogContent()}
+      />
     </div>
   );
 }
