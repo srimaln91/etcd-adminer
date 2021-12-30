@@ -54,7 +54,7 @@ export default function FSNavigator(props) {
         seconfirmationDialogOpen(true);
         break;
       case "newdir":
-        props.createDirectory("test");
+        props.createDirectory(contextMenuSelectedNode.abspath + "/test");
         break;
       default:
         console.log("no menu action defined");
@@ -130,7 +130,9 @@ export default function FSNavigator(props) {
           </ListItemIcon>
           <ListItemText>New File</ListItemText>
         </MenuItem>
-        <MenuItem onClick={handleClose} data-id="newdir">
+        <MenuItem onClick={handleClose} data-id="newdir"
+          disabled={ contextMenuSelectedNode !== null && contextMenuSelectedNode.type === "file"}
+        >
           <ListItemIcon>
             <CreateNewFolderIcon fontSize="small" />
           </ListItemIcon>

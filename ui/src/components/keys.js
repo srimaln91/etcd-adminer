@@ -20,6 +20,7 @@ class KeysComponent extends React.Component {
 
         this.setActiveKey = this.setActiveKey.bind(this);
         this.fetchKeys = this.fetchKeys.bind(this);
+        this.createDirectory = this.createDirectory.bind(this);
     }
 
     setActiveKey(key) {
@@ -33,7 +34,21 @@ class KeysComponent extends React.Component {
     }
 
     createDirectory(path) {
-        console.log(path);
+        axios.post(`/api/directory`, {
+            path: path,
+        }, {
+            auth: {
+                username: localStorage.getItem("user"),
+                password: localStorage.getItem("password")
+            },
+            headers: {
+                "X-Endpoints": localStorage.getItem("endpoints")
+            }
+        }).then(res => {
+            const keys = res.data;
+            console.log(keys);
+            this.setState({ keys: keys });
+        })
     }
 
     deleteKey(node) {
@@ -54,7 +69,7 @@ class KeysComponent extends React.Component {
         }).then(res => {
             const data = res.data;
             console.log(data);
-            this.fetchKeys();
+            this.setState({ keys: data });
         })
     }
 
