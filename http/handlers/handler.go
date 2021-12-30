@@ -211,6 +211,89 @@ func (jh *GenericHandler) GetKey(rw http.ResponseWriter, r *http.Request) {
 
 }
 
+func (jh *GenericHandler) CreateDirectory(rw http.ResponseWriter, r *http.Request) {
+
+	user, pass, ok := r.BasicAuth()
+	if !ok {
+		rw.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	reqDataDecoded := request.CreateDirectoryRequest{}
+	decoder := json.NewDecoder(r.Body)
+
+	err := decoder.Decode(&reqDataDecoded)
+	if err != nil {
+		rw.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	path := strings.Split(reqDataDecoded.Path, "/")
+	if len(path) == 0 {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	endpointString := r.Header.Get("X-Endpoints")
+	if endpointString == "" {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	endpoints := strings.Split(endpointString, ",")
+	if len(endpointString) < 1 {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	client, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
+	if err != nil {
+		if err == rpctypes.ErrAuthFailed {
+			rw.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	keys, err := client.Get(r.Context(), "/", clientv3.WithKeysOnly(), clientv3.WithPrefix(), clientv3.WithSort(clientv3.SortByKey, clientv3.SortDescend))
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// Create filetree by fetching keys from ETCD
+	fileTree := filetree.NewFileTree("/")
+
+	for _, k := range keys.Kvs {
+		segments := strings.Split(string(k.Key), "/")
+
+		segments = segments[1:]
+		length := len(segments)
+
+		path := segments[:length-1]
+		filename := segments[length-1]
+
+		fileTree.AddFile(fileTree.Root, path, filename)
+	}
+
+	// Add virtual directory
+	fileTree.AddDirectory(fileTree.Root, path[1:])
+
+	respData, err := json.Marshal(fileTree.Root)
+	if err != nil {
+		jh.logger.Error(r.Context(), err.Error())
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	rw.Header().Add("Content-Type", "application/json")
+	rw.WriteHeader(http.StatusOK)
+	rw.Write(respData)
+
+}
+
 func (jh *GenericHandler) UpdateKey(rw http.ResponseWriter, r *http.Request) {
 	user, pass, ok := r.BasicAuth()
 	if !ok {

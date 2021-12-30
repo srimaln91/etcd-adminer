@@ -75,3 +75,9 @@ func (ft *FileTree) AddFile(baseNode *Node, path []string, filename string) *Nod
 
 	return file
 }
+
+func (ft *FileTree) AddDirectory(baseNode *Node, path []string) *Node {
+	// Setup the path
+	leafNode := ft.SetupPath(baseNode, path)
+	return leafNode
+}
