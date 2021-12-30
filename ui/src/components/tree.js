@@ -12,13 +12,17 @@ import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AddIcon from '@mui/icons-material/Add';
-import ConfirmationDialog from './dialog';
+import ConfirmationDialog from './dialogs/confirmationDialog';
+import NewDirectoryDialog from './dialogs/newDirectoryDialog'
+import NewFileDialog from './dialogs/newFileDialog';
 
 export default function FSNavigator(props) {
 
   const [contextMenu, setContextMenu] = React.useState(null);
-  const [confirmationDialogOpen, seconfirmationDialogOpen] = React.useState(false);
+  const [deleteConfirmationDialogOpen, setdeleteConfirmationDialogOpen] = React.useState(false);
   const [contextMenuSelectedNode, setContextMenuSelectedNode] = React.useState(null);
+  const [newDirectoryDialogOpen, setnewDirectoryDialogOpen] = React.useState(false);
+  const [newFileDialogOpen, setnewFileDialogOpen] = React.useState(false);
 
   const handleContextMenu = (event, node) => {
     event.preventDefault();
@@ -48,13 +52,13 @@ export default function FSNavigator(props) {
         props.fetchKeys();
         break;
       case "newfile":
-        props.createFile(contextMenuSelectedNode.abspath, "test content");
+        setnewFileDialogOpen(true);
         break;
       case "delete":
-        seconfirmationDialogOpen(true);
+        setdeleteConfirmationDialogOpen(true);
         break;
       case "newdir":
-        props.createDirectory(contextMenuSelectedNode.abspath + "/test");
+        setnewDirectoryDialogOpen(true);
         break;
       default:
         console.log("no menu action defined");
@@ -87,11 +91,11 @@ export default function FSNavigator(props) {
   );
 
   const onConfirmationDialogCancel = () => {
-    seconfirmationDialogOpen(false)
+    setdeleteConfirmationDialogOpen(false)
   }
 
   const onConfirmationDialogConfirm = () => {
-    seconfirmationDialogOpen(false);
+    setdeleteConfirmationDialogOpen(false);
     props.deleteKey(contextMenuSelectedNode);
   }
 
@@ -100,6 +104,24 @@ export default function FSNavigator(props) {
       return ""
     }
     return "Do you really want to delete key " + contextMenuSelectedNode.abspath + " ?"
+  }
+
+  const newDirectoryDialogSubmit = (name) => {
+    setnewDirectoryDialogOpen(false);
+    props.createDirectory(contextMenuSelectedNode.abspath + "/" + name);
+  }
+
+  const newDirectoryDialogClose = () => {
+    setnewDirectoryDialogOpen(false);
+  }
+
+  const newFileDialogSubmit = (name) => {
+    setnewFileDialogOpen(false);
+    props.createFile(contextMenuSelectedNode.abspath + "/" + name);
+  }
+
+  const newFileDialogClose = () => {
+    setnewFileDialogOpen(false);
   }
 
   return (
@@ -124,7 +146,9 @@ export default function FSNavigator(props) {
             : undefined
         }
       >
-        <MenuItem onClick={handleClose} data-id="newfile">
+        <MenuItem onClick={handleClose} data-id="newfile"
+          disabled={ contextMenuSelectedNode !== null && contextMenuSelectedNode.type === "file"}
+        >
           <ListItemIcon>
             <AddIcon fontSize="small" />
           </ListItemIcon>
@@ -153,11 +177,23 @@ export default function FSNavigator(props) {
       </Menu>
 
       <ConfirmationDialog
-        open={confirmationDialogOpen}
+        open={deleteConfirmationDialogOpen}
         onCancel={onConfirmationDialogCancel}
         onConfirm={onConfirmationDialogConfirm}
         title={"Delete Key?"}
         content={getDeleteDialogContent()}
+      />
+
+      <NewDirectoryDialog
+        open={newDirectoryDialogOpen}
+        handleSubmit={newDirectoryDialogSubmit}
+        handleClose={newDirectoryDialogClose}
+      />
+
+      <NewFileDialog
+        open={newFileDialogOpen}
+        handleSubmit={newFileDialogSubmit}
+        handleClose={newFileDialogClose}
       />
     </div>
   );

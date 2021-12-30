@@ -279,7 +279,11 @@ func (jh *GenericHandler) CreateDirectory(rw http.ResponseWriter, r *http.Reques
 	}
 
 	// Add virtual directory
-	fileTree.AddDirectory(fileTree.Root, path[1:])
+	if reqDataDecoded.IsDirectory {
+		fileTree.AddDirectory(fileTree.Root, path[1:])
+	} else {
+		fileTree.AddFile(fileTree.Root, path[1:len(path)-1], path[len(path)-1])
+	}
 
 	respData, err := json.Marshal(fileTree.Root)
 	if err != nil {

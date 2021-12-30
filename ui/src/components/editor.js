@@ -34,6 +34,17 @@ class EditorComponent extends React.Component {
     }
 
     fetchKey(key){
+
+        this.setState({
+            value: "fetching...",
+            remoteKey: {
+                createRevision: "N/A",
+                modRevision: "N/A",
+                version: "N/A",
+                lease: 0
+            }
+        });
+
         axios.get(`/api/keys?key=` + key, {
             auth: {
                 username: localStorage.getItem("user"),
@@ -77,7 +88,21 @@ class EditorComponent extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.etcdKey !== prevProps.etcdKey) {
+        if ( prevProps.isNewKey !== this.props.isNewKey && this.props.isNewKey) {
+            this.setState({
+                value: "Type your content here and click on save",
+                remoteKey: {
+                    createRevision: "N/A",
+                    modRevision: "N/A",
+                    version: "N/A",
+                    lease: 0
+                }
+            });
+
+            return;
+        }
+
+        if (this.props.etcdKey !== prevProps.etcdKey)  {
             this.fetchKey(this.props.etcdKey);
         }
     }

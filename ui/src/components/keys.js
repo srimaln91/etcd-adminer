@@ -15,12 +15,14 @@ class KeysComponent extends React.Component {
             keys: {
                 id: 'root',
                 name: 'Parent',
-            }
+            },
+            isNewKey: false
         }
 
         this.setActiveKey = this.setActiveKey.bind(this);
         this.fetchKeys = this.fetchKeys.bind(this);
-        this.createDirectory = this.createDirectory.bind(this);
+        this.createVirtualDirectory = this.createVirtualDirectory.bind(this);
+        this.createVirtualFile = this.createVirtualFile.bind(this);
     }
 
     setActiveKey(key) {
@@ -29,13 +31,34 @@ class KeysComponent extends React.Component {
         })
     }
 
-    createFile(path, content) {
-        console.log(path + "-" + content);
-    }
-
-    createDirectory(path) {
+    createVirtualFile(path) {
         axios.post(`/api/directory`, {
             path: path,
+            isDirectory: false
+        }, {
+            auth: {
+                username: localStorage.getItem("user"),
+                password: localStorage.getItem("password")
+            },
+            headers: {
+                "X-Endpoints": localStorage.getItem("endpoints")
+            }
+        }).then(res => {
+            const keys = res.data;
+            console.log(keys);
+            this.setState({ keys: keys });
+
+            this.setState({
+                activeKey: path,
+                isNewKey: true
+            })
+        })
+    }
+
+    createVirtualDirectory(path) {
+        axios.post(`/api/directory`, {
+            path: path,
+            isDirectory: true
         }, {
             auth: {
                 username: localStorage.getItem("user"),
@@ -51,9 +74,14 @@ class KeysComponent extends React.Component {
         })
     }
 
+    setupNewKey(path){
+        this.setState({
+            activeKey: path,
+            isNewKey: true
+        })
+    }
+
     deleteKey(node) {
-        console.log("delete");
-        console.log(node);
         axios.delete(`/api/keys`, {
             auth: {
                 username: localStorage.getItem("user"),
@@ -69,7 +97,7 @@ class KeysComponent extends React.Component {
         }).then(res => {
             const data = res.data;
             console.log(data);
-            this.setState({ keys: data });
+            this.fetchKeys();
         })
     }
 
@@ -111,15 +139,15 @@ class KeysComponent extends React.Component {
                                 keys={this.state.keys}
                                 onKeyClick={this.setActiveKey}
                                 fetchKeys={this.fetchKeys}
-                                createFile={this.createFile}
-                                createDirectory={this.createDirectory}
+                                createFile={this.createVirtualFile}
+                                createDirectory={this.createVirtualDirectory}
                                 deleteKey={this.deleteKey}
                             />
                         </Paper>
                     </Grid>
 
                     <Grid item xs={12} md={8} lg={9}>
-                        <EditorComponent etcdKey={this.state.activeKey} />
+                        <EditorComponent etcdKey={this.state.activeKey} isNewKey={this.state.isNewKey} />
                     </Grid>
 
                     <Grid item xs={12}>
