@@ -82,10 +82,6 @@ class EditorComponent extends React.Component {
         }
     }
 
-    componentDidMount() {
-        this.fetchKey(this.props.etcdKey);
-    }
-
     editorDidMount(editor, monaco) {
         editor.focus();
     }
@@ -145,7 +141,7 @@ class EditorComponent extends React.Component {
                         <Button variant="contained" color="success" style={{marginRight:"10px"}} onClick={this.save}>
                             Save
                         </Button>
-                        <Button variant="outlined" color="error" onClick={this.discard}>
+                        <Button variant="contained" color="error" onClick={this.discard}>
                             Discard
                         </Button>
                     </div>
