@@ -1,7 +1,5 @@
 package filetree
 
-var counter int64
-
 type Node struct {
 	ID       int64            `json:"id"`
 	Name     string           `json:"name"`
@@ -19,7 +17,7 @@ type FileTree struct {
 func NewFileTree(basename string) *FileTree {
 	return &FileTree{
 		Root:      NewNode(basename, 1),
-		NodeCount: 0,
+		NodeCount: 1,
 	}
 }
 
