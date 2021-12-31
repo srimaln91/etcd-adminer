@@ -15,7 +15,11 @@ type Config struct {
 		Level log.Level `yaml:"level"`
 	} `yaml:"logger"`
 	ETCD struct {
-		Endpoints []string `yaml:"endpoints"`
+		Endpoints  []string `yaml:"endpoints"`
+		SuperAdmin struct {
+			UserName string `yaml:"username"`
+			Password string `yaml:"password"`
+		}
 	} `yaml:"etcd"`
 }
 

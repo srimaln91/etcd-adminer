@@ -1,6 +1,7 @@
 package router
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -11,7 +12,10 @@ import (
 func NewRouter(logger log.Logger) (http.Handler, error) {
 
 	// Init handler
-	jobRequestHandler := handlers.NewHTTPHandler(logger)
+	jobRequestHandler, err := handlers.NewHTTPHandler(logger)
+	if err != nil {
+		logger.Fatal(context.Background(), err.Error())
+	}
 
 	r := mux.NewRouter()
 	r.Use(CORS)
@@ -22,6 +26,7 @@ func NewRouter(logger log.Logger) (http.Handler, error) {
 	r.HandleFunc("/api/keys", jobRequestHandler.DeleteKey).Methods(http.MethodDelete, http.MethodOptions)
 	r.HandleFunc("/api/directory", jobRequestHandler.CreateDirectory).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/api/clusterinfo", jobRequestHandler.ClusterInfo).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/api/getconfig", jobRequestHandler.GetConfig).Methods(http.MethodGet, http.MethodOptions)
 
 	spa := spaHandler{staticPath: "static", indexPath: "index.html"}
 	r.PathPrefix("/").Handler(spa)

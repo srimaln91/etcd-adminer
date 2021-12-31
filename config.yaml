@@ -6,7 +6,9 @@ logger:
 
 etcd:
   endpoints:
-  # - etcd0.dev-mytaxi.com:2379
-  - "0.0.0.0:23791"
-  - "0.0.0.0:23792"
-  - "0.0.0.0:23793"
+    - "0.0.0.0:23791"
+    - "0.0.0.0:23792"
+    - "0.0.0.0:23793"
+  superadmin:
+    username: root
+    password: root@123

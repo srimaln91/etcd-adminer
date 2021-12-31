@@ -149,12 +149,20 @@ class ConnectionComponent extends React.Component {
         }
 
         this.setState({
-            endpoints: localStorage.getItem('endpoints'),
             username: localStorage.getItem('user'),
             password: localStorage.getItem('password'),
             name: localStorage.getItem('name'),
             sessions: sessions
         })
+
+        // Fetch available endpoints
+        axios.get(`/api/getconfig`)
+            .then(res => {
+                let endpoints = res.data.endpoints;
+                this.setState({
+                    endpoints: endpoints.join(",")
+                });
+            })
     }
 
     alert(severity, message) {
@@ -202,6 +210,7 @@ class ConnectionComponent extends React.Component {
                             <Grid item xs={12} sm={12}>
                                 <TextField
                                     required
+                                    disabled
                                     id="endpoints"
                                     name="endpoints"
                                     label="Endpoints"
