@@ -155,7 +155,7 @@ function App() {
             <Toolbar />
             <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
               <Routes>
-                <Route path="/" element={<KeysComponent />} />
+                <Route path="/" element={<ConnectionComponent />} />
                 <Route path="connection" element={<ConnectionComponent />} />
                 <Route path="cluster" element={<ClusterInfo />} />
                 <Route path="keys" element={<KeysComponent />} />
