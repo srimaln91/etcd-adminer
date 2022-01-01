@@ -132,7 +132,7 @@ export default function FSNavigator(props) {
         defaultExpanded={['1']}
         defaultEndIcon={<InsertDriveFileIcon sx={{ color: "#f1c40f" }} />}
         defaultExpandIcon={<FolderIcon sx={{ color: "#f1c40f" }} />}
-        sx={{ height: "100%", flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
+        sx={{ height: 700, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
       >
         {renderTree(props.keys)}
       </TreeView>
