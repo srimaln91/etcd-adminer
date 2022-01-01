@@ -1,13 +1,33 @@
 package filetree
 
 type Node struct {
-	ID       int64            `json:"id"`
-	Name     string           `json:"name"`
-	Type     string           `json:"type"`
-	NodesMap map[string]*Node `json:"-"`
-	Nodes    []*Node          `json:"children"`
-	AbsPath  string           `json:"abspath"`
+	ID   int64  `json:"id"`
+	Name string `json:"name"`
+
+	// Type is the string representation of the node type. To be removed in the future and replaced by NodeType
+	Type string `json:"type"`
+
+	// Typev2 represents the node type as a package defined constant in a backward compatible way
+	Typev2 NodeType `json:"nodeType"`
+
+	Nodes      []*Node    `json:"children"`
+	AbsPath    string     `json:"abspath"`
+	Permission Permission `json:"permission"`
 }
+
+type NodeType byte
+
+const (
+	NODE_TYPE_DIRECTORY NodeType = 0
+	NODE_TYPE_FILE      NodeType = 1
+)
+
+type Permission byte
+
+const (
+	PERMISSON_READ Permission = 1 << iota
+	PERMISSION_WRITE
+)
 
 type FileTree struct {
 	Root      *Node
@@ -23,18 +43,17 @@ func NewFileTree(basename string) *FileTree {
 
 func NewNode(name string, ID int64) *Node {
 	return &Node{
-		ID:       ID,
-		Name:     name,
-		Type:     "directory",
-		NodesMap: make(map[string]*Node),
-		Nodes:    make([]*Node, 0),
-		AbsPath:  "",
+		ID:      ID,
+		Name:    name,
+		Type:    "directory",
+		Typev2:  NODE_TYPE_DIRECTORY,
+		Nodes:   make([]*Node, 0),
+		AbsPath: "",
 	}
 }
 
 func (f *Node) NewFolder(name string, ID int64) *Node {
 	folder := NewNode(name, ID)
-	f.NodesMap[name] = folder
 	f.Nodes = append(f.Nodes, folder)
 	return folder
 }
@@ -43,7 +62,16 @@ func (ft *FileTree) SetupPath(baseNode *Node, path []string) *Node {
 	leafNode := baseNode
 
 	for _, p := range path {
-		if _, ok := leafNode.NodesMap[p]; !ok {
+		var nodeExist bool
+		for _, node := range leafNode.Nodes {
+			if node.Name == p && node.Type == "directory" {
+				nodeExist = true
+				leafNode = node
+				continue
+			}
+		}
+
+		if !nodeExist {
 			ft.NodeCount++
 			folder := leafNode.NewFolder(p, ft.NodeCount)
 
@@ -52,7 +80,6 @@ func (ft *FileTree) SetupPath(baseNode *Node, path []string) *Node {
 			leafNode = folder
 			continue
 		}
-		leafNode = leafNode.NodesMap[p]
 	}
 
 	return leafNode
@@ -62,15 +89,23 @@ func (ft *FileTree) AddFile(baseNode *Node, path []string, filename string) *Nod
 	// Setup the path
 	leafNode := ft.SetupPath(baseNode, path)
 
+	// Do not create the node if it exists in the tree
+	for _, f := range leafNode.Nodes {
+		if f.Name == filename && f.Type == "file" {
+			return f
+		}
+	}
+
+	// Create a new node
 	ft.NodeCount++
 	file := &Node{
 		ID:      ft.NodeCount,
 		Name:    filename,
 		Type:    "file",
+		Typev2:  NODE_TYPE_FILE,
 		AbsPath: leafNode.AbsPath + "/" + filename,
 	}
 
-	leafNode.NodesMap[file.Name] = file
 	leafNode.Nodes = append(leafNode.Nodes, file)
 
 	return file
