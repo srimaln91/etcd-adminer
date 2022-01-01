@@ -2,7 +2,6 @@ import * as React from 'react';
 import TreeView from '@mui/lab/TreeView';
 import FolderIcon from '@mui/icons-material/Folder';
 import TreeItem from '@mui/lab/TreeItem';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -15,6 +14,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ConfirmationDialog from './dialogs/confirmationDialog';
 import NewDirectoryDialog from './dialogs/newDirectoryDialog'
 import NewFileDialog from './dialogs/newFileDialog';
+import ArticleIcon from '@mui/icons-material/Article';
 
 export default function FSNavigator(props) {
 
@@ -130,7 +130,7 @@ export default function FSNavigator(props) {
         aria-label="rich object"
         defaultCollapseIcon={<FolderOpenIcon sx={{ color: "#f1c40f" }} />}
         defaultExpanded={['1']}
-        defaultEndIcon={<InsertDriveFileIcon sx={{ color: "#f1c40f" }} />}
+        defaultEndIcon={<ArticleIcon sx={{ color: "#f1c40f" }} />}
         defaultExpandIcon={<FolderIcon sx={{ color: "#f1c40f" }} />}
         sx={{ height: 700, flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
       >
