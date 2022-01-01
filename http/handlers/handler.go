@@ -51,7 +51,7 @@ func (jh *GenericHandler) getKeys(ctx context.Context, endpoints []string, user,
 
 	var keys *clientv3.GetResponse
 	if client.Username == "root" {
-		keys, err = client.Get(ctx, "/", clientv3.WithKeysOnly(), clientv3.WithPrefix(), clientv3.WithSort(clientv3.SortByKey, clientv3.SortDescend))
+		keys, err = client.Get(ctx, "/", clientv3.WithKeysOnly(), clientv3.WithPrefix(), clientv3.WithSort(clientv3.SortByKey, clientv3.SortAscend))
 		if err != nil {
 			return nil, err
 		}
