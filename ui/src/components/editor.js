@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import MonacoEditor from 'react-monaco-editor';
+import Editor from "@monaco-editor/react";
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import axios from 'axios';
@@ -107,10 +107,6 @@ class EditorComponent extends React.Component {
         }
     }
 
-    editorDidMount(editor, monaco) {
-        editor.focus();
-    }
-
     onChange(newValue, e) {
         this.setState({
             value: newValue
@@ -151,10 +147,10 @@ class EditorComponent extends React.Component {
                 </Paper>
                 <div>
 
-                    <MonacoEditor
+                    <Editor
                         width="100%"
-                        height="650"
-                        language="yaml"
+                        height="650px"
+                        defaultLanguage="yaml"
                         theme="vs-dark"
                         value={code}
                         options={options}
