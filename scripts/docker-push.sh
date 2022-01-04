@@ -13,7 +13,7 @@ export GIT_COMMIT_SHORT=$(git rev-parse --short HEAD)
 export DOCKER_REPO=$DOCKER_USER/etcd-adminer
 
 if [ "$GIT_BRANCH" != "main" ]; then
-	echo "Not pushing, not on master"
+	echo "Not pushing, not on main"
 elif [ "$DOCKER_USER" == "" ]; then
 	echo "Not pushing, DOCKER_USER not set"	
 	exit 1
