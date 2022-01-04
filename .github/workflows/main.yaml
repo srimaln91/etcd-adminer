@@ -28,7 +28,6 @@ jobs:
 
     - name: Docker push
       env:
-        DOCKER_LOGIN: ${{ secrets.DOCKERHUB_USER }}
         DOCKER_USER: ${{ secrets.DOCKERHUB_USER }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_USER }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_SECRET }}
       run: ./scripts/docker-push.sh
