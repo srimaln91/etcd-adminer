@@ -12,7 +12,7 @@ export GIT_COMMIT_SHORT=$(git rev-parse --short HEAD)
 # DOCKER_REPO - the base repository name to push the docker build to.
 export DOCKER_REPO=$DOCKER_USER/etcd-adminer
 
-if [ "$GIT_BRANCH" != "master" ]; then
+if [ "$GIT_BRANCH" != "main" ]; then
 	echo "Not pushing, not on master"
 elif [ "$DOCKER_USER" == "" ]; then
 	echo "Not pushing, DOCKER_USER not set"	
