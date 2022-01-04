@@ -34,7 +34,7 @@ else
 
 	# build the docker image
 	docker build -f Dockerfile -t $DOCKER_REPO:$GIT_COMMIT_SHORT .
-	if [ "$(curl -s https://hub.docker.com/v2/repositories/$DOCKER_REPO/tags/$GIT_VERSION/ | grep "digest")" == "" ]; then
+	if [ "$(curl -s https://hub.docker.com/v2/repositories/srimaln91/etcd-adminer/tags/$GIT_VERSION/ | grep "digest")" == "" ]; then
 		# push the newest tag
 		push "$GIT_VERSION"
 		push "latest"
