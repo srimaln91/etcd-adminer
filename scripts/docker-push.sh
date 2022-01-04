@@ -17,9 +17,6 @@ if [ "$GIT_BRANCH" != "main" ]; then
 elif [ "$DOCKER_USER" == "" ]; then
 	echo "Not pushing, DOCKER_USER not set"	
 	exit 1
-elif [ "$DOCKER_LOGIN" == "" ]; then
-	echo "Not pushing, DOCKER_LOGIN not set"	
-	exit 1
 elif [ "$DOCKER_PASSWORD" == "" ]; then
 	echo "Not pushing, DOCKER_PASSWORD not set"
 	exit 1
@@ -30,7 +27,7 @@ else
 		echo "Pushed $DOCKER_REPO:$1"
 	}
 	# docker login
-	echo $DOCKER_PASSWORD | docker login -u $DOCKER_LOGIN --password-stdin
+	echo $DOCKER_PASSWORD | docker login -u $DOCKER_USER --password-stdin
 
 	# build the docker image
 	docker build -f Dockerfile -t $DOCKER_REPO:$GIT_COMMIT_SHORT .
