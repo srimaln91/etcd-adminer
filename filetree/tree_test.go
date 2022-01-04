@@ -15,6 +15,7 @@ func TestCreatePath(t *testing.T) {
 	f := NewFileTree("/")
 	if f == nil {
 		t.Error("invalid result")
+		return
 	}
 
 	path := []string{"system", "app1", "db"}
@@ -28,6 +29,7 @@ func TestAddFile(t *testing.T) {
 	f := NewFileTree("/")
 	if f == nil {
 		t.Error("invalid result")
+		return
 	}
 
 	path := []string{"system", "app1", "db"}
