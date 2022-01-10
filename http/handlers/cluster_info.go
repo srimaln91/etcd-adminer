@@ -10,6 +10,12 @@ import (
 	"go.etcd.io/etcd/api/v3/v3rpc/rpctypes"
 )
 
+const (
+	leaderStatusUnknown  = "unknown"
+	leaderStatusLeader   = "leader"
+	leaderStatusFollower = "follower"
+)
+
 func (jh *GenericHandler) ClusterInfo(rw http.ResponseWriter, r *http.Request) {
 	user, pass, ok := r.BasicAuth()
 	if !ok {
@@ -61,16 +67,16 @@ func (jh *GenericHandler) ClusterInfo(rw http.ResponseWriter, r *http.Request) {
 
 	for _, member := range members.Members {
 
-		leaderStatus := "unknown"
+		leaderStatus := leaderStatusUnknown
 		endpointStatus, err := client.Status(r.Context(), member.GetClientURLs()[0])
 		if err != nil {
 			jh.logger.Error(r.Context(), err.Error())
 		}
 
 		if member.GetID() == endpointStatus.Leader {
-			leaderStatus = "leader"
+			leaderStatus = leaderStatusLeader
 		} else {
-			leaderStatus = "follower"
+			leaderStatus = leaderStatusFollower
 		}
 
 		node := response.ClusterNode{
