@@ -43,7 +43,7 @@ export default function NavMenu(props) {
         <ListItemText primary="Watchers" />
       </ListItem>
 
-      <ListItem button>
+      <ListItem button component={Link} to="users">
         <ListItemIcon>
           <PeopleIcon />
         </ListItemIcon>

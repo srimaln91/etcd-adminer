@@ -20,6 +20,7 @@ import ConnectionComponent from './components/connection';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Paper from '@mui/material/Paper';
 import ClusterInfo from './components/cluster';
+import UserList from './components/userList';
 import axios from 'axios';
 
 const drawerWidth = 240;
@@ -161,6 +162,7 @@ function App() {
                 <Route path="connection" element={<ConnectionComponent />} />
                 <Route path="cluster" element={<ClusterInfo />} />
                 <Route path="keys" element={<KeysComponent />} />
+                <Route path="users" element={<UserList />} />
               </Routes>
             </Container>
           </Box>

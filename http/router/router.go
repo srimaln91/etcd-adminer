@@ -27,6 +27,11 @@ func NewRouter(logger log.Logger) (http.Handler, error) {
 	r.HandleFunc("/api/directory", jobRequestHandler.CreateDirectory).Methods(http.MethodPost, http.MethodOptions)
 	r.HandleFunc("/api/clusterinfo", jobRequestHandler.ClusterInfo).Methods(http.MethodGet, http.MethodOptions)
 	r.HandleFunc("/api/getconfig", jobRequestHandler.GetConfig).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/api/users", jobRequestHandler.GetUserList).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/api/users/{name}", jobRequestHandler.GetUserInfo).Methods(http.MethodGet, http.MethodOptions)
+	r.HandleFunc("/api/users/{name}/role/{role}", jobRequestHandler.AssignRole).Methods(http.MethodPost, http.MethodOptions)
+	r.HandleFunc("/api/users/{name}/role/{role}", jobRequestHandler.UnassignRole).Methods(http.MethodDelete, http.MethodOptions)
+	r.HandleFunc("/api/role", jobRequestHandler.GetRoles).Methods(http.MethodGet, http.MethodOptions)
 
 	spa := spaHandler{staticPath: "static", indexPath: "index.html"}
 	r.PathPrefix("/").Handler(spa)
