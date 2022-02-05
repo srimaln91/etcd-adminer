@@ -7,6 +7,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/srimaln91/etcd-adminer/etcd"
+	"github.com/srimaln91/etcd-adminer/http/request"
 	"github.com/srimaln91/etcd-adminer/http/response"
 	"go.etcd.io/etcd/api/v3/v3rpc/rpctypes"
 )
@@ -232,4 +233,124 @@ func (jh *GenericHandler) UnassignRole(rw http.ResponseWriter, r *http.Request) 
 	}
 
 	rw.WriteHeader(http.StatusOK)
+}
+
+func (jh *GenericHandler) DeleteUser(rw http.ResponseWriter, r *http.Request) {
+
+	user, pass, ok := r.BasicAuth()
+	if !ok {
+		rw.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	endpointString := r.Header.Get("X-Endpoints")
+	if endpointString == "" {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	endpoints := strings.Split(endpointString, ",")
+	if len(endpointString) < 1 {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	vars := mux.Vars(r)
+
+	if _, ok = vars["name"]; !ok {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	client, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
+	if err != nil {
+		if err == rpctypes.ErrAuthFailed {
+			rw.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	_, err = client.UserDelete(r.Context(), vars["name"])
+	if err != nil {
+		if err == rpctypes.ErrPermissionDenied || err == rpctypes.ErrPermissionNotGranted {
+			rw.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	rw.WriteHeader(http.StatusOK)
+}
+
+func (jh *GenericHandler) CreateUser(rw http.ResponseWriter, r *http.Request) {
+	user, pass, ok := r.BasicAuth()
+	if !ok {
+		rw.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	endpointString := r.Header.Get("X-Endpoints")
+	if endpointString == "" {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	endpoints := strings.Split(endpointString, ",")
+	if len(endpointString) < 1 {
+		rw.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	client, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
+	if err != nil {
+		if err == rpctypes.ErrAuthFailed {
+			rw.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	reqDataDecoded := request.CreateUserRequest{}
+	decoder := json.NewDecoder(r.Body)
+
+	err = decoder.Decode(&reqDataDecoded)
+	if err != nil {
+		rw.WriteHeader(http.StatusUnprocessableEntity)
+		return
+	}
+
+	_, err = client.UserAdd(r.Context(), reqDataDecoded.UserName, reqDataDecoded.Password)
+	if err != nil {
+		if err == rpctypes.ErrPermissionDenied || err == rpctypes.ErrPermissionNotGranted {
+			rw.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// Assign Roles
+	for _, role := range reqDataDecoded.Roles {
+		_, err := client.UserGrantRole(r.Context(), reqDataDecoded.UserName, role)
+		if err != nil {
+			if err == rpctypes.ErrPermissionDenied || err == rpctypes.ErrPermissionNotGranted {
+				rw.WriteHeader(http.StatusForbidden)
+				return
+			}
+
+			rw.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+
+	rw.Header().Add("Content-Type", "application/json")
+	rw.WriteHeader(http.StatusCreated)
 }

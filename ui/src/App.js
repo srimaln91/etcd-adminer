@@ -21,6 +21,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Paper from '@mui/material/Paper';
 import ClusterInfo from './components/cluster';
 import UserList from './components/userList';
+import CreateUser from './components/createUser'
 import axios from 'axios';
 
 const drawerWidth = 240;
@@ -132,7 +133,7 @@ function App() {
               }}
             >
               <Paper variant="outline" sx={{maxHeight:50}}>
-                <img src="images/logo100.png" height="50px" width="50px"/>
+                <img src="/images/logo100.png" height="50px" width="50px"/>
               </Paper>
 
               <IconButton onClick={toggleDrawer}>
@@ -163,6 +164,7 @@ function App() {
                 <Route path="cluster" element={<ClusterInfo />} />
                 <Route path="keys" element={<KeysComponent />} />
                 <Route path="users" element={<UserList />} />
+                <Route path="users/new" element={<CreateUser />} />
               </Routes>
             </Container>
           </Box>

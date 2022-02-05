@@ -1,25 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import IconButton from '@mui/material/IconButton';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import axios from 'axios';
 
-
 export default function UserInfo(props) {
 
     const [selectedRole, setSelectedRole] = React.useState('');
     const [user, setUser] = React.useState({roles: []});
-
 
     useEffect(() => {
         fetchUser(props.userName);
@@ -157,7 +152,7 @@ export default function UserInfo(props) {
                     <Typography variant="subtitle1" gutterBottom>
                         Assign New Role:
                     </Typography>
-                    <FormControl sx={{ m: 1 }}>
+                    <FormControl sx={{ m: 1, width: "100px" }}>
                         <InputLabel id="demo-simple-select-label">Roles</InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
