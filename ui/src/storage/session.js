@@ -3,8 +3,9 @@ class Session {
     Endpoints;
     UserName;
     Password;
+    isActive;
 
-    constructor(name, endpoints, username, password){
+    constructor(name, endpoints, username, password) {
         this.Name = name;
         this.Endpoints = endpoints;
         this.UserName = username;
@@ -16,16 +17,16 @@ class SessionStore {
     key = "sessions"
     activeSession = "activeSession"
 
-    _getLocalSessions(){
+    _getLocalSessions() {
         let data = localStorage.getItem(this.key);
         if (data === "") {
-            throw new Error('Required');
+            throw new Error('no local sessions found');
         }
         let sessions = JSON.parse(data);
         return sessions;
     }
 
-    _setLocalSessions(sessions){
+    _setLocalSessions(sessions) {
         localStorage.setItem(this.key, JSON.stringify(sessions));
     }
 
@@ -34,13 +35,13 @@ class SessionStore {
         return sessions[name];
     }
 
-    GetAll(){
+    GetAll() {
         return this._getLocalSessions();
     }
 
     Add(session) {
         let sessions = this._getLocalSessions();
-        if (sessions === ""|| sessions == null) {
+        if (sessions === "" || sessions == null) {
             sessions = {};
         }
         sessions[session.Name] = session;
@@ -65,6 +66,18 @@ class SessionStore {
 
         return JSON.parse(data);
     }
+
+    IsLocalSessionAvailable() {
+        try {
+            let sessions = this._getLocalSessions();
+            if (Object.keys(sessions).length <= 0) {
+                return false;
+            }
+            return true
+        } catch (error) {
+            return false
+        }
+    }
 }
 
-export {Session, SessionStore}
+export { Session, SessionStore }

@@ -20,6 +20,12 @@ import ConnectionComponent from './components/connection';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Paper from '@mui/material/Paper';
 import ClusterInfo from './components/cluster';
+import UserList from './components/userList';
+import CreateUser from './components/createUser'
+import NewConnectionComponent from './components/newConnection'
+import About from './components/about'
+import { SessionStore } from './storage/session'
+
 import axios from 'axios';
 
 const drawerWidth = 240;
@@ -82,6 +88,8 @@ function App() {
 
   axios.defaults.timeout = 3000;
 
+  let sessionAvailable = new SessionStore().IsLocalSessionAvailable();
+
   return (
     <ThemeProvider theme={mdTheme}>
       <BrowserRouter>
@@ -131,7 +139,7 @@ function App() {
               }}
             >
               <Paper variant="outline" sx={{maxHeight:50}}>
-                <img src="images/logo100.png" height="50px" width="50px"/>
+                <img src="/images/logo100.png" alt="etcd-logo" height="50px" width="50px"/>
               </Paper>
 
               <IconButton onClick={toggleDrawer}>
@@ -140,7 +148,7 @@ function App() {
 
             </Toolbar>
             <Divider />
-            <NavMenu />
+            <NavMenu sessionAvailable={sessionAvailable} />
           </Drawer>
           <Box
             component="main"
@@ -157,10 +165,15 @@ function App() {
             <Toolbar />
             <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
               <Routes>
-                <Route path="/" element={<ConnectionComponent />} />
-                <Route path="connection" element={<ConnectionComponent />} />
+                <Route path="/" element={sessionAvailable ?<ConnectionComponent /> : <NewConnectionComponent />} />
+                <Route path="connection" element={sessionAvailable ?<ConnectionComponent /> : <NewConnectionComponent />} />
+                <Route path="connection/new" element={<NewConnectionComponent />} />
                 <Route path="cluster" element={<ClusterInfo />} />
                 <Route path="keys" element={<KeysComponent />} />
+                <Route path="users" element={<UserList />} />
+                <Route path="users/new" element={<CreateUser />} />
+                <Route path="about" element={<About />} />
+
               </Routes>
             </Container>
           </Box>

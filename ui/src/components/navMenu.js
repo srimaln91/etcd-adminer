@@ -1,6 +1,7 @@
 import * as React from 'react';
 import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
+import InfoIcon from '@mui/icons-material/Info';
 import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
@@ -22,40 +23,48 @@ export default function NavMenu(props) {
         <ListItemText primary="Connection" />
       </ListItem>
 
-      <ListItem button component={Link} to="cluster">
+      <ListItem button component={Link} to="cluster" disabled={!props.sessionAvailable}>
         <ListItemIcon>
           <StorageIcon />
         </ListItemIcon>
         <ListItemText primary="Cluster" />
       </ListItem>
 
-      <ListItem button component={Link} to="keys">
+      <ListItem button component={Link} to="keys" disabled={!props.sessionAvailable} >
         <ListItemIcon>
           <AssignmentIcon />
         </ListItemIcon>
         <ListItemText primary="Keys" />
       </ListItem>
 
-      <ListItem button>
+      <ListItem button component={Link} to="watchers" disabled>
         <ListItemIcon>
           <BarChartIcon />
         </ListItemIcon>
         <ListItemText primary="Watchers" />
       </ListItem>
 
-      <ListItem button>
+      <ListItem button component={Link} to="users" disabled={!props.sessionAvailable}>
         <ListItemIcon>
           <PeopleIcon />
         </ListItemIcon>
         <ListItemText primary="Users" />
       </ListItem>
 
-      <ListItem button>
+      <ListItem button component={Link} to="roles" disabled>
         <ListItemIcon>
           <LayersIcon />
         </ListItemIcon>
         <ListItemText primary="Roles" />
       </ListItem>
+
+      <ListItem button component={Link} to="about">
+        <ListItemIcon>
+          <InfoIcon />
+        </ListItemIcon>
+        <ListItemText primary="About" />
+      </ListItem>
+
     </List>
   )
 };
