@@ -45,6 +45,11 @@ func (jh *GenericHandler) GetUserList(rw http.ResponseWriter, r *http.Request) {
 
 	userList, err := client.UserList(r.Context())
 	if err != nil {
+		if err == rpctypes.ErrPermissionDenied || err == rpctypes.ErrPermissionNotGranted {
+			rw.WriteHeader(http.StatusForbidden)
+			return
+		}
+
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}
