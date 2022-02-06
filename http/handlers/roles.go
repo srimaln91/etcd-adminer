@@ -42,6 +42,11 @@ func (jh *GenericHandler) GetRoles(rw http.ResponseWriter, r *http.Request) {
 
 	roleList, err := client.RoleList(r.Context())
 	if err != nil {
+		if err == rpctypes.ErrPermissionDenied || err == rpctypes.ErrPermissionNotGranted {
+			rw.WriteHeader(http.StatusForbidden)
+			return
+		}
+
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -55,5 +60,4 @@ func (jh *GenericHandler) GetRoles(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 	rw.WriteHeader(http.StatusOK)
 	rw.Write(response)
-
 }
