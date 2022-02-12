@@ -43,8 +43,11 @@ class SessionStore {
         let sessions = this._getLocalSessions();
         if (sessions === "" || sessions == null) {
             sessions = {};
+            session.isActive = true
         }
+
         sessions[session.Name] = session;
+        this.SetActiveSession(session);
         this._setLocalSessions(sessions);
     }
 

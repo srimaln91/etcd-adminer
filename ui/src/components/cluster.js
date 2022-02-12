@@ -3,33 +3,37 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Node from './node';
-import axios from 'axios';
+import DataService from '../data/service'
+import Alert from '@mui/material/Alert';
 
 export default function ClusterInfo(props) {
 
     const [clusterInfo, setClusterInfo] = useState({ clusterInfo: {} });
-    const [nodes, setNodes] = useState([]);
+    const [errorMessage, setErrorMessage] = useState("");
+    const dataService = new DataService();
 
     useEffect(() => {
         const fetchData = async () => {
-            await axios.get(`/api/clusterinfo`, {
-                auth: {
-                    username: localStorage.getItem("user"),
-                    password: localStorage.getItem("password")
-                },
-                headers: {
-                    "X-Endpoints": localStorage.getItem("endpoints")
-                }
-            }).then(res => {
-                setClusterInfo(res.data);
-                setNodes(res.data.nodes);
-            }).catch(err => {
+            try {
+                let clusterInfo = await dataService.GetClusterInfo();
+                setClusterInfo(clusterInfo);
+                setErrorMessage("");
+            } catch (err) {
                 console.error(err);
-            })
+                setErrorMessage("Something went wrong!")
+            }
         };
 
         fetchData();
-    }, []);
+    });
+
+    const getAlert = () => {
+        if(errorMessage !== "") {
+            return (<Alert severity="error">{errorMessage}</Alert>);
+        }
+
+        return null
+    }
 
     return (
         <Grid container spacing={3}>
@@ -43,6 +47,9 @@ export default function ClusterInfo(props) {
                         height: 200,
                     }}
                 >
+
+                    {getAlert()}
+
                     <Typography variant="h6" gutterBottom>
                         Cluster Information
                     </Typography>

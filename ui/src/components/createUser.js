@@ -18,7 +18,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 import ListItemText from '@mui/material/ListItemText';
-import axios from 'axios';
+import DataService from '../data/service'
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -32,6 +32,8 @@ const MenuProps = {
 };
 
 export default function CreateUser(props) {
+
+    let dataService = new DataService();
 
     let formDefaults = {
         userName: '',
@@ -139,70 +141,32 @@ export default function CreateUser(props) {
         }
 
         // Create User
-        createUser(values.userName, values.password, roles).then(() => {
-            printSuccessMessage("User created Successfully");
-            setValues(formDefaults);
-        }).catch((err) => {
+        try{
+            let status = dataService.CreateUser(values.userName, values.password, roles);
+            if(status){
+                printSuccessMessage("User created Successfully");
+                setValues(formDefaults);
+            }
+        }catch(error){
+            console.error(error);
             printErrorMessage("User creation failed!");
-        });
+        }
     }
 
     React.useEffect(() => {
-        fetchRoles().then((roles) => {
-            setAvailableRoles(roles);
-        }).catch((err) => {
-            alert(err);
-        })
-    }, []);
 
-    const fetchRoles = () => {
-        return new Promise((resolve, reject) => {
-            axios.get(`/api/role`, {
-                auth: {
-                    username: localStorage.getItem("user"),
-                    password: localStorage.getItem("password")
-                },
-                headers: {
-                    "X-Endpoints": localStorage.getItem("endpoints")
-                }
-            }).then(res => {
-                if (res.status === 200) {
-                    resolve(res.data);
-                }
-                reject(new Error("error fetching roles"));
-            }).catch(err => {
-                reject(err);
-            })
-        }
-    )}
-
-    const createUser = (userName, password, roles) => {
-
-        let requestBody = {
-            userName: userName,
-            password: password,
-            roles: roles
+        let fetchData = async() => {
+            try {
+                let roles = await dataService.GetRoles();
+                setAvailableRoles(roles);
+            }catch(error){
+                alert(error);
+            }
         }
 
-        return new Promise((resolve, reject) => {
-            axios.post(`/api/users`, requestBody, {
-                auth: {
-                    username: localStorage.getItem("user"),
-                    password: localStorage.getItem("password")
-                },
-                headers: {
-                    "X-Endpoints": localStorage.getItem("endpoints")
-                }
-            }).then(res => {
-                if (res.status === 201) {
-                    resolve(res.data);
-                }
-                reject(new Error("error creating user"));
-            }).catch(err => {
-                reject(err);
-            })
-        }
-    )}
+        fetchData();
+
+    });
 
     return (
         <Grid container spacing={3}>

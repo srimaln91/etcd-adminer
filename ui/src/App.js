@@ -88,7 +88,11 @@ function App() {
 
   axios.defaults.timeout = 3000;
 
-  let sessionAvailable = new SessionStore().IsLocalSessionAvailable();
+  const sessionStore = new SessionStore();
+
+  const isLocalSessionAvailable = () => {
+    return sessionStore.IsLocalSessionAvailable();
+  }
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -148,7 +152,7 @@ function App() {
 
             </Toolbar>
             <Divider />
-            <NavMenu sessionAvailable={sessionAvailable} />
+            <NavMenu sessionAvailable={isLocalSessionAvailable()} />
           </Drawer>
           <Box
             component="main"
@@ -165,8 +169,8 @@ function App() {
             <Toolbar />
             <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
               <Routes>
-                <Route path="/" element={sessionAvailable ?<ConnectionComponent /> : <NewConnectionComponent />} />
-                <Route path="connection" element={sessionAvailable ?<ConnectionComponent /> : <NewConnectionComponent />} />
+                <Route path="/" element={isLocalSessionAvailable() ?<ConnectionComponent /> : <NewConnectionComponent />} />
+                <Route path="connection" element={isLocalSessionAvailable() ?<ConnectionComponent /> : <NewConnectionComponent />} />
                 <Route path="connection/new" element={<NewConnectionComponent />} />
                 <Route path="cluster" element={<ClusterInfo />} />
                 <Route path="keys" element={<KeysComponent />} />

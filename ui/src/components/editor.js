@@ -6,9 +6,10 @@ import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import axios from 'axios';
+import DataService from '../data/service'
 
 class EditorComponent extends React.Component {
+    dataService;
 
     constructor(props) {
         super(props);
@@ -24,6 +25,8 @@ class EditorComponent extends React.Component {
         this.onChange = this.onChange.bind(this);
         this.discard = this.discard.bind(this);
         this.save = this.save.bind(this);
+
+        this.dataService = new DataService();
     }
 
     static getDerivedStateFromProps(props, state) {
@@ -37,7 +40,7 @@ class EditorComponent extends React.Component {
         return null;
     }
 
-    fetchKey(key) {
+    fetchKey = async(key) => {
 
         this.setState({
             value: "fetching...",
@@ -49,51 +52,34 @@ class EditorComponent extends React.Component {
             }
         });
 
-        axios.get(`/api/keys?key=` + key, {
-            auth: {
-                username: localStorage.getItem("user"),
-                password: localStorage.getItem("password")
-            },
-            headers: {
-                "X-Endpoints": localStorage.getItem("endpoints")
-            }
-        })
-            .then(res => {
-                this.setState({
-                    key: res.data.key,
-                    value: res.data.value,
-                    remoteKey: res.data
-                });
-            }).catch(err => {
-                console.error(err);
-                this.setState({snackBarError: true});
-            })
+        try{
+            let data = await this.dataService.FetchKey(key);
+            this.setState({
+                key: data.key,
+                value: data.value,
+                remoteKey: data
+            });
+        }catch(error){
+            console.error(error);
+            this.setState({snackBarError: true});
+        }
     }
 
-    discard() {
+    discard = () => {
         this.fetchKey(this.props.etcdKey)
     }
 
-    save() {
-        axios.put(`/api/keys`, {
-            key: this.state.key,
-            value: this.state.value
-        }, {
-            auth: {
-                username: localStorage.getItem("user"),
-                password: localStorage.getItem("password")
-            },
-            headers: {
-                "X-Endpoints": localStorage.getItem("endpoints")
-            }
-        })
-            .then(res => {
+    save = async() => {
+        try{
+            let result = await this.dataService.PutKey(this.state.key, this.state.value);
+            if(result){
                 this.setState({snackBarSuccess: true});
                 this.fetchKey(this.props.etcdKey)
-            }).catch(err => {
-                console.log(err);
-                this.setState({snackBarError: true});
-            })
+            }
+        }catch(error){
+            console.log(error);
+            this.setState({snackBarError: true});
+        }
     }
 
     componentDidUpdate(prevProps) {

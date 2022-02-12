@@ -2,14 +2,17 @@ import * as React from 'react';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import axios from 'axios';
 import ConnectionCard from './connectionCard';
 import { SessionStore } from '../storage/session'
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import { Link } from "react-router-dom";
+import DataService from '../data/service'
+import Alert from '@mui/material/Alert';
 
 class ConnectionComponent extends React.Component {
+
+    dataService;
 
     constructor(props) {
         super(props);
@@ -18,14 +21,17 @@ class ConnectionComponent extends React.Component {
 
         this.state = {
             sessions: {},
-            activeConnection: this.sessionStore.GetActiveSession()
+            activeConnection: this.sessionStore.GetActiveSession(),
+            errorMessage: ""
         }
-        
+
         this.useSession = this.useSession.bind(this);
         this.deleteSession = this.deleteSession.bind(this);
+        this.dataService = new DataService();
     }
 
     useSession(session) {
+        this.clearAlert();
         this.sessionStore.SetActiveSession(session);
         this.setState({
             activeConnection: session
@@ -39,6 +45,7 @@ class ConnectionComponent extends React.Component {
     }
 
     deleteSession(session) {
+        this.clearAlert();
         this.sessionStore.Delete(session);
 
         this.setState({
@@ -46,7 +53,7 @@ class ConnectionComponent extends React.Component {
         })
     }
 
-    componentDidMount() {
+    componentDidMount = async () => {
 
         let sessions = this.sessionStore.GetAll();
         if (sessions === null) {
@@ -57,14 +64,32 @@ class ConnectionComponent extends React.Component {
             sessions: sessions
         })
 
-        // Fetch available endpoints
-        axios.get(`/api/getconfig`)
-            .then(res => {
-                let endpoints = res.data.endpoints;
-                this.setState({
-                    endpoints: endpoints.join(",")
-                });
+        try {
+            let config = await this.dataService.GetConfig();
+            this.setState({
+                endpoints: config.endpoints.join(",")
+            });
+
+        } catch (error) {
+            console.error(error);
+            this.setState({
+                errorMessage: "Something went wrong!"
             })
+        }
+    }
+
+    getAlert = () => {
+        if (this.state.errorMessage !== "") {
+            return (<Alert severity="error">{this.state.errorMessage}</Alert>);
+        }
+
+        return null
+    }
+
+    clearAlert = () => {
+        this.setState({
+            errorMessage: "",
+        })
     }
 
     render() {
@@ -78,6 +103,8 @@ class ConnectionComponent extends React.Component {
                             flexWrap: 'wrap'
                         }}
                     >
+
+                        {this.getAlert()}
 
                         <Grid item xs={12} sm={12}>
                             <Typography variant="h6">

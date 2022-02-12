@@ -11,8 +11,11 @@ import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import axios from 'axios';
 import { SessionStore, Session } from '../storage/session'
+import DataService from '../data/service'
 
 class NewConnectionComponent extends React.Component {
+
+    dataService;
 
     constructor(props) {
         super(props);
@@ -38,9 +41,11 @@ class NewConnectionComponent extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.useSession = this.useSession.bind(this);
         this.deleteSession = this.deleteSession.bind(this);
+
+        this.dataService = new DataService();
     }
 
-    handleTest() {
+    handleTest = async() => {
         this.setState({
             loading: true,
             tested: false,
@@ -50,44 +55,35 @@ class NewConnectionComponent extends React.Component {
             errorMessage: ""
         })
 
-        axios.post(`/api/auth`, null, {
-            auth: {
-                username: this.state.username,
-                password: this.state.password
-            },
-            headers: {
-                "X-Endpoints": this.state.endpoints
-            }
-        })
-            .then(res => {
-                if (res.status === 200) {
-                    this.setState({
-                        loading: false,
-                        tested: true,
-                        success: true,
-                        successMessage: "Connection Succeeded!"
-                    })
-                } else {
-                    this.setState({
-                        loading: false,
-                        tested: false,
-                        success: false,
-                        error: true,
-                        successMessage: "",
-                        errorMessage: "Invalid Credentials!"
-                    })
-                }
-            }).catch(err => {
+        try{
+            let status = await this.dataService.TestConnection(this.state.username, this.state.password, this.state.endpoints);
+            if(status === true){
+                this.setState({
+                    loading: false,
+                    tested: true,
+                    success: true,
+                    successMessage: "Connection Succeeded!"
+                })
+            } else {
                 this.setState({
                     loading: false,
                     tested: false,
                     success: false,
                     error: true,
                     successMessage: "",
-                    errorMessage: "Something Went Wrong!"
+                    errorMessage: "Invalid Credentials!"
                 })
+            }
+        } catch(error){
+            this.setState({
+                loading: false,
+                tested: false,
+                success: false,
+                error: true,
+                successMessage: "",
+                errorMessage: "Something Went Wrong!"
             })
-
+        }
     }
 
     handleChange(e) {
