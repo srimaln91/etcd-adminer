@@ -139,8 +139,8 @@ export default class DataService {
     FetchKey = (path) => {
         let activeSession = this.sessionStore.GetActiveSession();
 
-        return new Promise(async(resolve, reject) => {
-            try{
+        return new Promise(async (resolve, reject) => {
+            try {
                 let response = await axios.get(`/api/keys?key=` + path, {
                     auth: {
                         username: activeSession.UserName,
@@ -151,12 +151,12 @@ export default class DataService {
                     }
                 });
 
-                if(response.status === 200){
+                if (response.status === 200) {
                     resolve(response.data);
                 }
 
                 reject(new Error("Invalid response code"));
-            }catch(error){
+            } catch (error) {
                 reject(error);
             }
         })
@@ -165,8 +165,8 @@ export default class DataService {
     PutKey = (key, value) => {
         let activeSession = this.sessionStore.GetActiveSession();
 
-        return new Promise(async(resolve, reject) => {
-            try{
+        return new Promise(async (resolve, reject) => {
+            try {
                 let response = await axios.put(`/api/keys`, {
                     key: key,
                     value: value
@@ -180,13 +180,224 @@ export default class DataService {
                     }
                 })
 
-                if(response.status === 200){
+                if (response.status === 200) {
                     resolve(true);
                 }
                 reject(new Error("invalid response code"));
-            }catch(error){
+            } catch (error) {
                 reject(error);
             }
         })
     }
+
+    CreateNode = (path, isDirectory) => {
+        let activeSession = this.sessionStore.GetActiveSession();
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                let response = await axios.post(`/api/directory`, {
+                    path: path,
+                    isDirectory: isDirectory
+                }, {
+                    auth: {
+                        username: activeSession.UserName,
+                        password: activeSession.Password
+                    },
+                    headers: {
+                        "X-Endpoints": activeSession.Endpoints
+                    }
+                });
+
+                if (response.status === 200) {
+                    resolve(response.data);
+                }
+
+                reject(new Error("invalid response code"));
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+
+    DeleteNode = (key, isDirectory) => {
+        let activeSession = this.sessionStore.GetActiveSession();
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                let response = await axios.delete(`/api/keys`, {
+                    auth: {
+                        username: activeSession.UserName,
+                        password: activeSession.Password
+                    },
+                    headers: {
+                        "X-Endpoints": activeSession.Endpoints
+                    },
+                    data: {
+                        key: key,
+                        isDirectory: isDirectory
+                    }
+                });
+
+                if (response.status === 200) {
+                    resolve(true);
+                }
+                reject(new Error("invalid response code"));
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+
+    GetKeys = () => {
+        let activeSession = this.sessionStore.GetActiveSession();
+        return new Promise(async (resolve, reject) => {
+            try {
+                let response = await axios.get(`/api/keys`, {
+                    auth: {
+                        username: activeSession.UserName,
+                        password: activeSession.Password
+                    },
+                    headers: {
+                        "X-Endpoints": activeSession.Endpoints
+                    },
+                });
+
+                if (response.status === 200) {
+                    resolve(response.data);
+                }
+                reject(new Error("invalid response code"));
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+
+    FetchUser = (username) => {
+        let activeSession = this.sessionStore.GetActiveSession();
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                let response = await axios.get(`/api/users/` + username, {
+                    auth: {
+                        username: activeSession.UserName,
+                        password: activeSession.Password
+                    },
+                    headers: {
+                        "X-Endpoints": activeSession.Endpoints
+                    }
+                });
+
+                if (response.status === 200) {
+                    resolve(response.data);
+                }
+
+                reject(new Error("invalid response code"));
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+
+    AssignRole = (user, role) => {
+        let activeSession = this.sessionStore.GetActiveSession();
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                let response = await axios.post(`/api/users/` + user + `/role/` + role, null, {
+                    auth: {
+                        username: activeSession.UserName,
+                        password: activeSession.Password
+                    },
+                    headers: {
+                        "X-Endpoints": activeSession.Endpoints
+                    }
+                });
+
+                if (response.status === 200) {
+                    resolve(true);
+                }
+
+                reject(new Error("invalid response code"));
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+
+    RemoveRole = (user, role) => {
+        let activeSession = this.sessionStore.GetActiveSession();
+
+        return new Promise(async (resolve, reject) => {
+            try {
+                let response = await axios.delete(`/api/users/` + user + `/role/` + role, {
+                    auth: {
+                        username: activeSession.UserName,
+                        password: activeSession.Password
+                    },
+                    headers: {
+                        "X-Endpoints": activeSession.Endpoints
+                    }
+                })
+
+                if (response.status === 200) {
+                    resolve(true);
+                }
+
+                reject(new Error("invalid response code"));
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+
+    GetUsers = () => {
+        let activeSession = this.sessionStore.GetActiveSession();
+
+        return Promise(async (resolve, reject) => {
+            try {
+                let response = await axios.get(`/api/users`, {
+                    auth: {
+                        username: activeSession.UserName,
+                        password: activeSession.Password
+                    },
+                    headers: {
+                        "X-Endpoints": activeSession.Endpoints
+                    }
+                });
+
+                if (response.status === 200) {
+                    resolve(response.data);
+                }
+                reject(new Error("invalid response code"));
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+
+    DeleteUser = (user) => {
+        let activeSession = this.sessionStore.GetActiveSession();
+        return new Promise(async (resolve, reject) => {
+            try {
+                let response = await axios.delete(`/api/users/` + user, {
+                    auth: {
+                        username: activeSession.UserName,
+                        password: activeSession.Password
+                    },
+                    headers: {
+                        "X-Endpoints": activeSession.Endpoints
+                    }
+                });
+
+                if (response.status === 200) {
+                    resolve(true);
+                }
+
+                reject(new Error("invalid response code"));
+            } catch (error) {
+                reject(error);
+            }
+        })
+    }
+
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import Node from './node';
+import Node from './etcdNode';
 import DataService from '../data/service'
 import Alert from '@mui/material/Alert';
 
@@ -28,7 +28,7 @@ export default function ClusterInfo(props) {
     });
 
     const getAlert = () => {
-        if(errorMessage !== "") {
+        if (errorMessage !== "") {
             return (<Alert severity="error">{errorMessage}</Alert>);
         }
 
@@ -111,7 +111,7 @@ export default function ClusterInfo(props) {
                                     />
                                 )
                             })}
-                           
+
                         </Grid>
                     </Grid>
                 </Paper>

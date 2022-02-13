@@ -4,10 +4,10 @@ import FSNavigator from './tree';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import EditorComponent from './editor';
-import axios from 'axios';
+import DataService from '../data/service'
 
 class KeysComponent extends React.Component {
-
+    dataService;
     constructor() {
         super()
         this.state = {
@@ -23,6 +23,8 @@ class KeysComponent extends React.Component {
         this.fetchKeys = this.fetchKeys.bind(this);
         this.createVirtualDirectory = this.createVirtualDirectory.bind(this);
         this.createVirtualFile = this.createVirtualFile.bind(this);
+
+        this.dataService = new DataService();
     }
 
     setActiveKey(key) {
@@ -31,90 +33,58 @@ class KeysComponent extends React.Component {
         })
     }
 
-    createVirtualFile(path) {
-        axios.post(`/api/directory`, {
-            path: path,
-            isDirectory: false
-        }, {
-            auth: {
-                username: localStorage.getItem("user"),
-                password: localStorage.getItem("password")
-            },
-            headers: {
-                "X-Endpoints": localStorage.getItem("endpoints")
-            }
-        }).then(res => {
-            const keys = res.data;
-            console.log(keys);
-            this.setState({ keys: keys });
-
+    createVirtualFile = async (path) => {
+        try {
+            let fileTree = await this.dataService.CreateNode(path, false);
             this.setState({
+                keys: fileTree,
                 activeKey: path,
                 isNewKey: true
-            })
-        })
+            });
+        } catch (error) {
+            //TODO: display an error message
+            console.error(error);
+        }
     }
 
-    createVirtualDirectory(path) {
-        axios.post(`/api/directory`, {
-            path: path,
-            isDirectory: true
-        }, {
-            auth: {
-                username: localStorage.getItem("user"),
-                password: localStorage.getItem("password")
-            },
-            headers: {
-                "X-Endpoints": localStorage.getItem("endpoints")
-            }
-        }).then(res => {
-            const keys = res.data;
-            console.log(keys);
-            this.setState({ keys: keys });
-        })
+    createVirtualDirectory = async (path) => {
+        try {
+            let fileTree = await this.dataService.CreateNode(path, true);
+            this.setState({
+                keys: fileTree
+            });
+        } catch (error) {
+            //TODO: display an error message
+            console.error(error);
+        }
     }
 
-    setupNewKey(path){
+    setupNewKey(path) {
         this.setState({
             activeKey: path,
             isNewKey: true
         })
     }
 
-    deleteKey(node) {
-        axios.delete(`/api/keys`, {
-            auth: {
-                username: localStorage.getItem("user"),
-                password: localStorage.getItem("password")
-            },
-            headers: {
-                "X-Endpoints": localStorage.getItem("endpoints")
-            },
-            data: {
-                key: node.abspath,
-                isDirectory: node.type === "directory"
+    deleteKey = async (node) => {
+        try {
+            let isSuccess = await this.dataService.DeleteNode(node.abspath, node.type === "directory");
+            if (isSuccess) {
+                this.fetchKeys();
             }
-        }).then(res => {
-            const data = res.data;
-            console.log(data);
-            this.fetchKeys();
-        })
+        } catch (error) {
+            console.error(error);
+        }
     }
 
-    fetchKeys() {
-        axios.get(`/api/keys`, {
-            auth: {
-                username: localStorage.getItem("user"),
-                password: localStorage.getItem("password")
-            },
-            headers: {
-                "X-Endpoints": localStorage.getItem("endpoints")
-            }
-        }).then(res => {
-            const keys = res.data;
-            console.log(keys);
+    fetchKeys = async () => {
+        try {
+            let keys = await this.dataService.GetKeys();
             this.setState({ keys: keys });
-        })
+        } catch (error) {
+            // TODO: display an error
+            console.error(error);
+        }
     }
 
     componentDidMount() {

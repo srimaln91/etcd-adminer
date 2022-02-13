@@ -4,16 +4,17 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import ConfirmationDialog from './dialogs/confirmationDialog';
 import UserInfo from './userInfo';
-import axios from 'axios';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 import { Link } from "react-router-dom";
 import UserTable from './userTable';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import DataService from '../data/service'
 
 export default function UserList(props) {
 
+    const dataService = new DataService();
     const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState();
     const [showRightPane, setShowRightPain] = useState(false);
@@ -24,7 +25,7 @@ export default function UserList(props) {
     useEffect(() => {
         fetchRoles();
         fetchUsers();
-    }, []);
+    });
 
     let onConfirmationDialogCancel = () => {
         setdeleteConfirmationDialogOpen(false)
@@ -40,59 +41,41 @@ export default function UserList(props) {
     }
 
     let fetchUsers = async () => {
-        await axios.get(`/api/users`, {
-            auth: {
-                username: localStorage.getItem("user"),
-                password: localStorage.getItem("password")
-            },
-            headers: {
-                "X-Endpoints": localStorage.getItem("endpoints")
-            }
-        }).then(res => {
-            setUsers(res.data);
-        }).catch(err => {
-            if(err.response.status === 403) {
+        try {
+            let users = await dataService.GetUsers();
+            setUsers(users);
+        } catch (error) {
+            if (error.response.status === 403) {
                 setErrorMessage("Permission Denied!");
             } else {
                 setErrorMessage("Something went wrong!");
             }
-        })
+        }
     };
 
     let fetchRoles = async () => {
-        await axios.get(`/api/role`, {
-            auth: {
-                username: localStorage.getItem("user"),
-                password: localStorage.getItem("password")
-            },
-            headers: {
-                "X-Endpoints": localStorage.getItem("endpoints")
-            }
-        }).then(res => {
-            setRoles(res.data);
-        }).catch(err => {
-            if(err.response.status === 403) {
-                setErrorMessage("Permission Denied!");
+        try {
+            let roles = await dataService.GetRoles();
+            setRoles(roles);
+        } catch (error) {
+            if (error.response.status === 403) {
+                setErrorMessage("Error fetching roles. Permission Denied!");
             } else {
                 setErrorMessage("Something went wrong!");
             }
-        })
+        }
     };
 
     let deleteUser = async (user) => {
-        await axios.delete(`/api/users/` + user, {
-            auth: {
-                username: localStorage.getItem("user"),
-                password: localStorage.getItem("password")
-            },
-            headers: {
-                "X-Endpoints": localStorage.getItem("endpoints")
+        try {
+            let isDeleted = await dataService.DeleteUser(user);
+            if (isDeleted) {
+                fetchUsers();
             }
-        }).then(res => {
-            fetchUsers();
-        }).catch(err => {
-            console.error(err);
-        })
+        } catch (error) {
+            //TODO: display an error
+            console.error(error);
+        }
     };
 
     let selectUser = (user) => {

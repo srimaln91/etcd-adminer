@@ -9,6 +9,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { Link } from "react-router-dom";
 import DataService from '../data/service'
 import Alert from '@mui/material/Alert';
+import { Navigate } from "react-router-dom";
 
 class ConnectionComponent extends React.Component {
 
@@ -21,6 +22,7 @@ class ConnectionComponent extends React.Component {
 
         this.state = {
             sessions: {},
+            localSessionsFound: true,
             activeConnection: this.sessionStore.GetActiveSession(),
             errorMessage: ""
         }
@@ -57,6 +59,9 @@ class ConnectionComponent extends React.Component {
 
         let sessions = this.sessionStore.GetAll();
         if (sessions === null) {
+            this.setState({
+                localSessionsFound: false
+            })
             sessions = {};
         }
 
@@ -93,6 +98,12 @@ class ConnectionComponent extends React.Component {
     }
 
     render() {
+
+        // Redirect to the new connection component if there are no location sessions
+        if (!this.state.localSessionsFound) {
+            return <Navigate to={"new"} />
+        }
+
         return (
             <Grid container spacing={3}>
                 <Grid item xs={12} sm={12}>

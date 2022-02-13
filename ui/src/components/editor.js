@@ -40,7 +40,7 @@ class EditorComponent extends React.Component {
         return null;
     }
 
-    fetchKey = async(key) => {
+    fetchKey = async (key) => {
 
         this.setState({
             value: "fetching...",
@@ -52,16 +52,16 @@ class EditorComponent extends React.Component {
             }
         });
 
-        try{
+        try {
             let data = await this.dataService.FetchKey(key);
             this.setState({
                 key: data.key,
                 value: data.value,
                 remoteKey: data
             });
-        }catch(error){
+        } catch (error) {
             console.error(error);
-            this.setState({snackBarError: true});
+            this.setState({ snackBarError: true });
         }
     }
 
@@ -69,16 +69,16 @@ class EditorComponent extends React.Component {
         this.fetchKey(this.props.etcdKey)
     }
 
-    save = async() => {
-        try{
+    save = async () => {
+        try {
             let result = await this.dataService.PutKey(this.state.key, this.state.value);
-            if(result){
-                this.setState({snackBarSuccess: true});
+            if (result) {
+                this.setState({ snackBarSuccess: true });
                 this.fetchKey(this.props.etcdKey)
             }
-        }catch(error){
+        } catch (error) {
             console.log(error);
-            this.setState({snackBarError: true});
+            this.setState({ snackBarError: true });
         }
     }
 
@@ -110,7 +110,7 @@ class EditorComponent extends React.Component {
 
 
     handleSnackBarClose = (event, reason) => {
-        this.setState({snackBarSuccess: false});
+        this.setState({ snackBarSuccess: false });
     };
 
     render() {

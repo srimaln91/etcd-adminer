@@ -10,7 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 export default function NewDirectoryDialog(props) {
 
   const [directoryName, setdirectoryName] = React.useState("");
-  const [ inputError, setinputError] = React.useState(false);
+  const [inputError, setinputError] = React.useState(false);
 
   const handleChange = (e) => {
     setdirectoryName(e.target.value);
@@ -19,8 +19,8 @@ export default function NewDirectoryDialog(props) {
   const submit = (e) => {
     e.preventDefault();
     if (directoryName === "") {
-        setinputError(true);
-        return
+      setinputError(true);
+      return
     }
 
     props.handleSubmit(directoryName);
@@ -43,7 +43,7 @@ export default function NewDirectoryDialog(props) {
             fullWidth
             variant="standard"
             onChange={handleChange}
-            error = {inputError}
+            error={inputError}
           />
         </DialogContent>
         <DialogActions>

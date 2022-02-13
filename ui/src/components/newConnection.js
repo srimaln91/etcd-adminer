@@ -9,7 +9,6 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
-import axios from 'axios';
 import { SessionStore, Session } from '../storage/session'
 import DataService from '../data/service'
 
@@ -135,7 +134,7 @@ class NewConnectionComponent extends React.Component {
         })
     }
 
-    componentDidMount() {
+    componentDidMount = async() => {
 
         let sessions = this.sessionStore.GetAll();
         if (sessions === null) {
@@ -149,14 +148,15 @@ class NewConnectionComponent extends React.Component {
             sessions: sessions
         })
 
-        // Fetch available endpoints
-        axios.get(`/api/getconfig`)
-            .then(res => {
-                let endpoints = res.data.endpoints;
-                this.setState({
-                    endpoints: endpoints.join(",")
-                });
-            })
+        try{
+            let config = await this.dataService.GetConfig();
+            this.setState({
+                endpoints: config.endpoints.join(",")
+            });
+        }catch(error){
+            // TODO: display an error
+            console.error(error);
+        }
     }
 
     alert(severity, message) {

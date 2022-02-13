@@ -10,7 +10,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 export default function NewFileDialog(props) {
 
   const [fileName, setfileName] = React.useState("");
-  const [ inputError, setinputError] = React.useState(false);
+  const [inputError, setinputError] = React.useState(false);
 
   const handleChange = (e) => {
     setfileName(e.target.value);
@@ -19,8 +19,8 @@ export default function NewFileDialog(props) {
   const submit = (e) => {
     e.preventDefault();
     if (fileName === "") {
-        setinputError(true);
-        return
+      setinputError(true);
+      return
     }
 
     props.handleSubmit(fileName);
@@ -43,7 +43,7 @@ export default function NewFileDialog(props) {
             fullWidth
             variant="standard"
             onChange={handleChange}
-            error = {inputError}
+            error={inputError}
           />
         </DialogContent>
         <DialogActions>

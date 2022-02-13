@@ -169,15 +169,14 @@ function App() {
             <Toolbar />
             <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
               <Routes>
-                <Route path="/" element={isLocalSessionAvailable() ?<ConnectionComponent /> : <NewConnectionComponent />} />
-                <Route path="connection" element={isLocalSessionAvailable() ?<ConnectionComponent /> : <NewConnectionComponent />} />
+                <Route path="/" element={<ConnectionComponent />} />
+                <Route path="connection" element={<ConnectionComponent />} />
                 <Route path="connection/new" element={<NewConnectionComponent />} />
                 <Route path="cluster" element={<ClusterInfo />} />
                 <Route path="keys" element={<KeysComponent />} />
                 <Route path="users" element={<UserList />} />
                 <Route path="users/new" element={<CreateUser />} />
                 <Route path="about" element={<About />} />
-
               </Routes>
             </Container>
           </Box>

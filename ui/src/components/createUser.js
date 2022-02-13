@@ -141,13 +141,13 @@ export default function CreateUser(props) {
         }
 
         // Create User
-        try{
+        try {
             let status = dataService.CreateUser(values.userName, values.password, roles);
-            if(status){
+            if (status) {
                 printSuccessMessage("User created Successfully");
                 setValues(formDefaults);
             }
-        }catch(error){
+        } catch (error) {
             console.error(error);
             printErrorMessage("User creation failed!");
         }
@@ -155,11 +155,11 @@ export default function CreateUser(props) {
 
     React.useEffect(() => {
 
-        let fetchData = async() => {
+        let fetchData = async () => {
             try {
                 let roles = await dataService.GetRoles();
                 setAvailableRoles(roles);
-            }catch(error){
+            } catch (error) {
                 alert(error);
             }
         }

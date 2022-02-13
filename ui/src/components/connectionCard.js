@@ -80,7 +80,7 @@ export default function ConnectionCard(props) {
                     User: {props.connection.UserName}
                 </Typography>
                 <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                    Is Active: {props.isActive ? "true": "false"}
+                    Is Active: {props.isActive ? "true" : "false"}
                 </Typography>
             </CardContent>
             <CardActions>

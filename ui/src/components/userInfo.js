@@ -9,94 +9,54 @@ import Select from '@mui/material/Select';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import axios from 'axios';
+import DataService from '../data/service'
 
 export default function UserInfo(props) {
 
     const [selectedRole, setSelectedRole] = React.useState('');
-    const [user, setUser] = React.useState({roles: []});
+    const [user, setUser] = React.useState({ roles: [] });
+    const dataService = new DataService();
 
     useEffect(() => {
         fetchUser(props.userName);
-    }, []);
+    });
 
     let fetchUser = async (username) => {
-        await axios.get(`/api/users/` + username, {
-            auth: {
-                username: localStorage.getItem("user"),
-                password: localStorage.getItem("password")
-            },
-            headers: {
-                "X-Endpoints": localStorage.getItem("endpoints")
-            }
-        }).then(res => {
-            setUser(res.data);
-        }).catch(err => {
-            console.error(err);
-        })
+        try {
+            let userDetails = await dataService.FetchUser(username);
+            setUser(userDetails);
+        } catch (error) {
+            // TODO: display an error
+            console.error(error);
+        }
     };
-
-    let assignRole = (user, role) => {
-        return new Promise((resolve, reject) => {
-            axios.post(`/api/users/` + user + `/role/` + role, null, {
-                auth: {
-                    username: localStorage.getItem("user"),
-                    password: localStorage.getItem("password")
-                },
-                headers: {
-                    "X-Endpoints": localStorage.getItem("endpoints")
-                }
-            }).then(res => {
-                if (res.status === 200) {
-                    // Add role the user
-                    resolve(true);
-                    return;
-                }
-                reject(Error("something went wrong!"));
-            }).catch(err => {
-                reject(err);
-            })
-        })
-
-    }
-
-    let unAssignRole = (user, role) => {
-        return new Promise((resolve, reject) => {
-            axios.delete(`/api/users/` + user + `/role/` + role, {
-                auth: {
-                    username: localStorage.getItem("user"),
-                    password: localStorage.getItem("password")
-                },
-                headers: {
-                    "X-Endpoints": localStorage.getItem("endpoints")
-                }
-            }).then(res => {
-                if (res.status === 200) {
-                    resolve(true);
-                    return;
-                }
-                reject(Error("something went wrong!"));
-            }).catch(err => {
-                reject(err);
-            })
-        })
-    }
 
     const handleClickChip = () => {
         // TODO: This should point user into the role details page
         console.info('You clicked the Chip.');
     };
 
-    const handleClickAssignRole = () => {
-        assignRole(user.name, selectedRole).then(() => {
-            fetchUser(props.userName);
-        })
+    const handleClickAssignRole = async () => {
+        try {
+            let isSuccess = await dataService.AssignRole(user.name, selectedRole);
+            if (isSuccess) {
+                fetchUser(props.userName);
+            }
+        } catch (error) {
+            // TODO: display an erro message
+            console.error(error);
+        }
     };
 
-    const handleDelete = (role) => {
-        unAssignRole(user.name, role).then(()=>{
-            fetchUser(props.userName);
-        })
+    const handleDelete = async (role) => {
+        try {
+            let isSuccess = await dataService.RemoveRole(user.name, role);
+            if (isSuccess) {
+                fetchUser(props.userName);
+            }
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const getRoles = () => {
