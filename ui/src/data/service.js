@@ -34,7 +34,7 @@ export default class DataService {
                     headers: {
                         "X-Endpoints": activeSession.Endpoints
                     },
-                    timeout: 5,
+                    timeout: 10000,
                 })
                 if (response.status === 200) {
                     resolve(response.data);
