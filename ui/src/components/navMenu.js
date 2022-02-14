@@ -11,8 +11,15 @@ import StorageIcon from '@mui/icons-material/Storage';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { Link } from "react-router-dom";
 import List from '@mui/material/List';
+import { SessionStore } from '../storage/session'
 
 export default function NavMenu(props) {
+
+  const sessionStore = new SessionStore();
+
+  const isLocalSessionAvailable = () => {
+    return sessionStore.IsLocalSessionAvailable();
+  }
 
   return (
     <List>
@@ -23,14 +30,14 @@ export default function NavMenu(props) {
         <ListItemText primary="Connection" />
       </ListItem>
 
-      <ListItem button component={Link} to="cluster" disabled={!props.sessionAvailable}>
+      <ListItem button component={Link} to="cluster" disabled={!isLocalSessionAvailable()}>
         <ListItemIcon>
           <StorageIcon />
         </ListItemIcon>
         <ListItemText primary="Cluster" />
       </ListItem>
 
-      <ListItem button component={Link} to="keys" disabled={!props.sessionAvailable} >
+      <ListItem button component={Link} to="keys" disabled={!isLocalSessionAvailable()} >
         <ListItemIcon>
           <AssignmentIcon />
         </ListItemIcon>
@@ -44,7 +51,7 @@ export default function NavMenu(props) {
         <ListItemText primary="Watchers" />
       </ListItem>
 
-      <ListItem button component={Link} to="users" disabled={!props.sessionAvailable}>
+      <ListItem button component={Link} to="users" disabled={!isLocalSessionAvailable()}>
         <ListItemIcon>
           <PeopleIcon />
         </ListItemIcon>

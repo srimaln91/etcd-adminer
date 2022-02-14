@@ -78,9 +78,15 @@ const mdTheme = createTheme();
 
 function App() {
   const [open, setOpen] = React.useState(true);
+  const [refreshNav, setRefreshNav] = React.useState(false);
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  const forceRefreshNav = () => {
+    setRefreshNav(!refreshNav);
+  }
 
   if (process.env.NODE_ENV === "development") {
     axios.defaults.baseURL = "http://localhost:8080/";
@@ -152,7 +158,7 @@ function App() {
 
             </Toolbar>
             <Divider />
-            <NavMenu sessionAvailable={isLocalSessionAvailable()} />
+            <NavMenu refreshNav={refreshNav} />
           </Drawer>
           <Box
             component="main"
@@ -171,7 +177,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<ConnectionComponent />} />
                 <Route path="connection" element={<ConnectionComponent />} />
-                <Route path="connection/new" element={<NewConnectionComponent />} />
+                <Route path="connection/new" element={<NewConnectionComponent forceRefreshNav={forceRefreshNav} />} />
                 <Route path="cluster" element={<ClusterInfo />} />
                 <Route path="keys" element={<KeysComponent />} />
                 <Route path="users" element={<UserList />} />

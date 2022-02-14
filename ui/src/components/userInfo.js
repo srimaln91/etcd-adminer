@@ -19,7 +19,7 @@ export default function UserInfo(props) {
 
     useEffect(() => {
         fetchUser(props.userName);
-    });
+    },[]);
 
     let fetchUser = async (username) => {
         try {

@@ -101,7 +101,7 @@ class ConnectionComponent extends React.Component {
 
         // Redirect to the new connection component if there are no location sessions
         if (!this.state.localSessionsFound) {
-            return <Navigate to={"new"} />
+            return <Navigate to={"/connection/new"} replace={true} />
         }
 
         return (

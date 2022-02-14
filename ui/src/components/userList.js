@@ -25,7 +25,7 @@ export default function UserList(props) {
     useEffect(() => {
         fetchRoles();
         fetchUsers();
-    });
+    }, []);
 
     let onConfirmationDialogCancel = () => {
         setdeleteConfirmationDialogOpen(false)
@@ -45,6 +45,7 @@ export default function UserList(props) {
             let users = await dataService.GetUsers();
             setUsers(users);
         } catch (error) {
+            console.log(error);
             if (error.response.status === 403) {
                 setErrorMessage("Permission Denied!");
             } else {

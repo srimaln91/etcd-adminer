@@ -353,7 +353,7 @@ export default class DataService {
     GetUsers = () => {
         let activeSession = this.sessionStore.GetActiveSession();
 
-        return Promise(async (resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
                 let response = await axios.get(`/api/users`, {
                     auth: {

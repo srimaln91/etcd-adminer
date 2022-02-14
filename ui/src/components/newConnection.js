@@ -112,6 +112,10 @@ class NewConnectionComponent extends React.Component {
             this.state.password
         );
         this.sessionStore.Add(session);
+
+        // enable nav menu items
+        this.props.forceRefreshNav();
+        
         this.setState({
             sessions: this.sessionStore.GetAll()
         });
