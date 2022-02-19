@@ -22,7 +22,7 @@ if [ "$(which node)" == "" ]; then
 	exit 1
 fi
 
-# Check Node.js installation
+# Check NPM installation
 if [ "$(which npm)" == "" ]; then
 	echo "error: NPM is not installed. Please download and follow installation"\
 		 "instructions at https://nodejs.org/en/ to continue."
