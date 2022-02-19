@@ -11,23 +11,10 @@ import (
 
 func (jh *GenericHandler) GetKeys(rw http.ResponseWriter, r *http.Request) {
 
-	user, pass, ok := r.BasicAuth()
-	if !ok {
-		rw.WriteHeader(http.StatusForbidden)
-		return
-	}
+	user, pass, _ := r.BasicAuth()
 
 	endpointString := r.Header.Get("X-Endpoints")
-	if endpointString == "" {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
-
-	endpoints := strings.Split(endpointString, ",")
-	if len(endpointString) < 1 {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
+	endpoints := parseEndpoints(endpointString)
 
 	keys, err := jh.getKeys(r.Context(), endpoints, user, pass)
 	if err != nil {

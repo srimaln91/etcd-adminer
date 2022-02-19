@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/srimaln91/etcd-adminer/etcd"
@@ -12,23 +11,10 @@ import (
 
 func (jh *GenericHandler) Authenticate(rw http.ResponseWriter, r *http.Request) {
 
-	user, pass, ok := r.BasicAuth()
-	if !ok {
-		rw.WriteHeader(http.StatusForbidden)
-		return
-	}
+	user, pass, _ := r.BasicAuth()
 
 	endpointString := r.Header.Get("X-Endpoints")
-	if endpointString == "" {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
-
-	endpoints := strings.Split(endpointString, ",")
-	if len(endpointString) < 1 {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
+	endpoints := parseEndpoints(endpointString)
 
 	_, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
 	if err != nil {
