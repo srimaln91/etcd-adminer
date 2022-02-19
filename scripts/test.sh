@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-cd $(dirname "${BASH_SOURCE[0]}")/..
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 # Check the Go installation
 if [ "$(which go)" == "" ]; then
