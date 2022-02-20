@@ -29,7 +29,7 @@ elif [ "$DOCKER_PASSWORD" == "" ]; then
 	exit 1
 else 
 	push(){
-		docker tag "$DOCKER_REPO:$GIT_COMMIT_SHORT $DOCKER_REPO:$1"
+		docker tag "$DOCKER_REPO:$GIT_COMMIT_SHORT" "$DOCKER_REPO:$1"
 		docker push "$DOCKER_REPO:$1"
 		echo "Pushed $DOCKER_REPO:$1"
 	}
