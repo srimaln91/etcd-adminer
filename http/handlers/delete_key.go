@@ -3,33 +3,19 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 
 	"github.com/srimaln91/etcd-adminer/etcd"
 	"github.com/srimaln91/etcd-adminer/http/request"
 	"github.com/srimaln91/etcd-adminer/http/response"
 	"go.etcd.io/etcd/api/v3/v3rpc/rpctypes"
-	"go.etcd.io/etcd/client/v3"
+	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
 func (jh *GenericHandler) DeleteKey(rw http.ResponseWriter, r *http.Request) {
-	user, pass, ok := r.BasicAuth()
-	if !ok {
-		rw.WriteHeader(http.StatusForbidden)
-		return
-	}
+	user, pass, _ := r.BasicAuth()
 
 	endpointString := r.Header.Get("X-Endpoints")
-	if endpointString == "" {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
-
-	endpoints := strings.Split(endpointString, ",")
-	if len(endpointString) < 1 {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
+	endpoints := parseEndpoints(endpointString)
 
 	client, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
 	if err != nil {

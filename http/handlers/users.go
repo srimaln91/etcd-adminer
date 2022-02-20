@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/srimaln91/etcd-adminer/etcd"
@@ -14,23 +13,10 @@ import (
 
 func (jh *GenericHandler) GetUserList(rw http.ResponseWriter, r *http.Request) {
 
-	user, pass, ok := r.BasicAuth()
-	if !ok {
-		rw.WriteHeader(http.StatusForbidden)
-		return
-	}
+	user, pass, _ := r.BasicAuth()
 
 	endpointString := r.Header.Get("X-Endpoints")
-	if endpointString == "" {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
-
-	endpoints := strings.Split(endpointString, ",")
-	if len(endpointString) < 1 {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
+	endpoints := parseEndpoints(endpointString)
 
 	client, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
 	if err != nil {
@@ -68,27 +54,13 @@ func (jh *GenericHandler) GetUserList(rw http.ResponseWriter, r *http.Request) {
 
 func (jh *GenericHandler) GetUserInfo(rw http.ResponseWriter, r *http.Request) {
 
-	user, pass, ok := r.BasicAuth()
-	if !ok {
-		rw.WriteHeader(http.StatusForbidden)
-		return
-	}
+	user, pass, _ := r.BasicAuth()
 
 	endpointString := r.Header.Get("X-Endpoints")
-	if endpointString == "" {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
-
-	endpoints := strings.Split(endpointString, ",")
-	if len(endpointString) < 1 {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
-
+	endpoints := parseEndpoints(endpointString)
 	vars := mux.Vars(r)
 
-	if _, ok = vars["name"]; !ok {
+	if _, ok := vars["name"]; !ok {
 		rw.WriteHeader(http.StatusNotAcceptable)
 		return
 	}
@@ -128,32 +100,19 @@ func (jh *GenericHandler) GetUserInfo(rw http.ResponseWriter, r *http.Request) {
 
 func (jh *GenericHandler) AssignRole(rw http.ResponseWriter, r *http.Request) {
 
-	user, pass, ok := r.BasicAuth()
-	if !ok {
-		rw.WriteHeader(http.StatusForbidden)
-		return
-	}
+	user, pass, _ := r.BasicAuth()
 
 	endpointString := r.Header.Get("X-Endpoints")
-	if endpointString == "" {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
-
-	endpoints := strings.Split(endpointString, ",")
-	if len(endpointString) < 1 {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
+	endpoints := parseEndpoints(endpointString)
 
 	vars := mux.Vars(r)
 
-	if _, ok = vars["name"]; !ok {
+	if _, ok := vars["name"]; !ok {
 		rw.WriteHeader(http.StatusNotAcceptable)
 		return
 	}
 
-	if _, ok = vars["role"]; !ok {
+	if _, ok := vars["role"]; !ok {
 		rw.WriteHeader(http.StatusNotAcceptable)
 		return
 	}
@@ -185,32 +144,19 @@ func (jh *GenericHandler) AssignRole(rw http.ResponseWriter, r *http.Request) {
 
 func (jh *GenericHandler) UnassignRole(rw http.ResponseWriter, r *http.Request) {
 
-	user, pass, ok := r.BasicAuth()
-	if !ok {
-		rw.WriteHeader(http.StatusForbidden)
-		return
-	}
+	user, pass, _ := r.BasicAuth()
 
 	endpointString := r.Header.Get("X-Endpoints")
-	if endpointString == "" {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
-
-	endpoints := strings.Split(endpointString, ",")
-	if len(endpointString) < 1 {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
+	endpoints := parseEndpoints(endpointString)
 
 	vars := mux.Vars(r)
 
-	if _, ok = vars["name"]; !ok {
+	if _, ok := vars["name"]; !ok {
 		rw.WriteHeader(http.StatusNotAcceptable)
 		return
 	}
 
-	if _, ok = vars["role"]; !ok {
+	if _, ok := vars["role"]; !ok {
 		rw.WriteHeader(http.StatusNotAcceptable)
 		return
 	}
@@ -242,27 +188,14 @@ func (jh *GenericHandler) UnassignRole(rw http.ResponseWriter, r *http.Request) 
 
 func (jh *GenericHandler) DeleteUser(rw http.ResponseWriter, r *http.Request) {
 
-	user, pass, ok := r.BasicAuth()
-	if !ok {
-		rw.WriteHeader(http.StatusForbidden)
-		return
-	}
+	user, pass, _ := r.BasicAuth()
 
 	endpointString := r.Header.Get("X-Endpoints")
-	if endpointString == "" {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
-
-	endpoints := strings.Split(endpointString, ",")
-	if len(endpointString) < 1 {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
+	endpoints := parseEndpoints(endpointString)
 
 	vars := mux.Vars(r)
 
-	if _, ok = vars["name"]; !ok {
+	if _, ok := vars["name"]; !ok {
 		rw.WriteHeader(http.StatusNotAcceptable)
 		return
 	}
@@ -293,23 +226,10 @@ func (jh *GenericHandler) DeleteUser(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (jh *GenericHandler) CreateUser(rw http.ResponseWriter, r *http.Request) {
-	user, pass, ok := r.BasicAuth()
-	if !ok {
-		rw.WriteHeader(http.StatusForbidden)
-		return
-	}
+	user, pass, _ := r.BasicAuth()
 
 	endpointString := r.Header.Get("X-Endpoints")
-	if endpointString == "" {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
-
-	endpoints := strings.Split(endpointString, ",")
-	if len(endpointString) < 1 {
-		rw.WriteHeader(http.StatusNotAcceptable)
-		return
-	}
+	endpoints := parseEndpoints(endpointString)
 
 	client, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
 	if err != nil {

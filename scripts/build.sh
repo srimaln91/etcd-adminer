@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-cd $(dirname "${BASH_SOURCE[0]}")/..
+cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 if [ "$1" == "" ]; then
 	echo "error: missing argument (binary name)"
@@ -22,7 +22,7 @@ if [ "$(which node)" == "" ]; then
 	exit 1
 fi
 
-# Check Node.js installation
+# Check NPM installation
 if [ "$(which npm)" == "" ]; then
 	echo "error: NPM is not installed. Please download and follow installation"\
 		 "instructions at https://nodejs.org/en/ to continue."
@@ -53,9 +53,9 @@ npm install
 npm run build --production
 
 popd
-mkdir -p $1/static
-mv ui/build/* $1/static/
+mkdir -p "$1"/static
+mv ui/build/* "$1"/static/
 
 go mod download
-go build -ldflags "$LDFLAGS" -o $1/etcd-adminer-$OS-$ARCH
-cp config.yaml $1/
+go build -ldflags "$LDFLAGS" -o "$1"/etcd-adminer-"$OS"-"$ARCH"
+cp config.yaml "$1"/
