@@ -46,7 +46,7 @@ LDFLAGS="$LDFLAGS -X github.com/srimaln91/go-make.osArch=${OS}/${ARCH}"
 LDFLAGS="$LDFLAGS -X github.com/srimaln91/go-make.date=${DATE}"
 
 # cleaning up
-rm -rf $1 static/*
+rm -rf "$1" static/*
 
 pushd ./ui
 npm install
