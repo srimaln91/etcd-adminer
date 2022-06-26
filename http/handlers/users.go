@@ -13,7 +13,7 @@ import (
 
 func (jh *GenericHandler) GetUserList(rw http.ResponseWriter, r *http.Request) {
 
-	requestMeta, ok := r.Context().Value("meta").(request.RequestMeta)
+	requestMeta, ok := r.Context().Value(META_KEY).(request.RequestMeta)
 	if !ok {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
@@ -55,7 +55,7 @@ func (jh *GenericHandler) GetUserList(rw http.ResponseWriter, r *http.Request) {
 
 func (jh *GenericHandler) GetUserInfo(rw http.ResponseWriter, r *http.Request) {
 
-	requestMeta, ok := r.Context().Value("meta").(request.RequestMeta)
+	requestMeta, ok := r.Context().Value(META_KEY).(request.RequestMeta)
 	if !ok {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
@@ -103,7 +103,7 @@ func (jh *GenericHandler) GetUserInfo(rw http.ResponseWriter, r *http.Request) {
 
 func (jh *GenericHandler) AssignRole(rw http.ResponseWriter, r *http.Request) {
 
-	requestMeta, ok := r.Context().Value("meta").(request.RequestMeta)
+	requestMeta, ok := r.Context().Value(META_KEY).(request.RequestMeta)
 	if !ok {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
@@ -148,7 +148,7 @@ func (jh *GenericHandler) AssignRole(rw http.ResponseWriter, r *http.Request) {
 
 func (jh *GenericHandler) UnassignRole(rw http.ResponseWriter, r *http.Request) {
 
-	requestMeta, ok := r.Context().Value("meta").(request.RequestMeta)
+	requestMeta, ok := r.Context().Value(META_KEY).(request.RequestMeta)
 	if !ok {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
@@ -193,7 +193,7 @@ func (jh *GenericHandler) UnassignRole(rw http.ResponseWriter, r *http.Request) 
 
 func (jh *GenericHandler) DeleteUser(rw http.ResponseWriter, r *http.Request) {
 
-	requestMeta, ok := r.Context().Value("meta").(request.RequestMeta)
+	requestMeta, ok := r.Context().Value(META_KEY).(request.RequestMeta)
 	if !ok {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
@@ -232,7 +232,7 @@ func (jh *GenericHandler) DeleteUser(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (jh *GenericHandler) CreateUser(rw http.ResponseWriter, r *http.Request) {
-	requestMeta, ok := r.Context().Value("meta").(request.RequestMeta)
+	requestMeta, ok := r.Context().Value(META_KEY).(request.RequestMeta)
 	if !ok {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return

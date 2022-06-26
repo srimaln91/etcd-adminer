@@ -12,7 +12,7 @@ import (
 
 func (jh *GenericHandler) Authenticate(rw http.ResponseWriter, r *http.Request) {
 
-	requestMeta, ok := r.Context().Value("meta").(request.RequestMeta)
+	requestMeta, ok := r.Context().Value(META_KEY).(request.RequestMeta)
 	if !ok {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
