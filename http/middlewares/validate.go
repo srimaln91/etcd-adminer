@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/srimaln91/etcd-adminer/http/handlers"
 	"github.com/srimaln91/etcd-adminer/http/request"
 )
 
@@ -21,7 +22,7 @@ func NewRequestValidateMiddleware() *requestValidateMiddleware {
 
 func parseEndpoints(header string) ([]string, error) {
 	addresses := strings.Split(header, ",")
-	
+
 	return addresses, nil
 }
 
@@ -56,7 +57,7 @@ func (rvm *requestValidateMiddleware) ValidateRequest(next http.HandlerFunc) htt
 		}
 
 		// Attach request metadata to the Http request. So handlers can take it from the context
-		modifiedReq := r.WithContext(context.WithValue(r.Context(), "meta", meta))
+		modifiedReq := r.WithContext(context.WithValue(r.Context(), handlers.META_KEY, meta))
 
 		// Call the next handler
 		next.ServeHTTP(w, modifiedReq)

@@ -9,6 +9,10 @@ import (
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
 
+type MetaKey string
+
+const META_KEY MetaKey = "meta"
+
 type GenericHandler struct {
 	logger           log.Logger
 	superAdminClient *etcd.Client
