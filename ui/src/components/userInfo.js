@@ -24,6 +24,9 @@ export default function UserInfo(props) {
     let fetchUser = async (username) => {
         try {
             let userDetails = await dataService.FetchUser(username);
+            if(user.roles == null) {
+                user.roles = [];
+            }
             setUser(userDetails);
         } catch (error) {
             // TODO: display an error
