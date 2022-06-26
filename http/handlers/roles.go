@@ -28,6 +28,8 @@ func (jh *GenericHandler) GetRoles(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer jh.closeEtcdClient(client)
+
 	roleList, err := client.RoleList(r.Context())
 	if err != nil {
 		if err == rpctypes.ErrPermissionDenied || err == rpctypes.ErrPermissionNotGranted {

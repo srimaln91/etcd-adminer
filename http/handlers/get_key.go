@@ -29,6 +29,8 @@ func (jh *GenericHandler) GetKey(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer jh.closeEtcdClient(client)
+
 	queryParams := r.URL.Query()
 	requestedKey := queryParams.Get("key")
 

@@ -34,6 +34,8 @@ func (jh *GenericHandler) ClusterInfo(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer jh.closeEtcdClient(client)
+
 	members, err := client.Cluster.MemberList(r.Context())
 	if err != nil {
 		if err == rpctypes.ErrAuthFailed {
@@ -59,6 +61,8 @@ func (jh *GenericHandler) ClusterInfo(rw http.ResponseWriter, r *http.Request) {
 		endpointStatus, err := client.Status(r.Context(), member.GetClientURLs()[0])
 		if err != nil {
 			jh.logger.Error(r.Context(), err.Error())
+			rw.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 
 		if member.GetID() == endpointStatus.Leader {

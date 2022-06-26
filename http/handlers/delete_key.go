@@ -29,6 +29,8 @@ func (jh *GenericHandler) DeleteKey(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer jh.closeEtcdClient(client)
+
 	reqDataDecoded := request.DeleteKeyRequest{}
 	decoder := json.NewDecoder(r.Body)
 

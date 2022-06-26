@@ -28,6 +28,8 @@ func (jh *GenericHandler) UpdateKey(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer jh.closeEtcdClient(client)
+
 	reqDataDecoded := request.CreateKeyRequest{}
 	decoder := json.NewDecoder(r.Body)
 
