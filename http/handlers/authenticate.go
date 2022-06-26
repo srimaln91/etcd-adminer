@@ -16,7 +16,7 @@ func (jh *GenericHandler) Authenticate(rw http.ResponseWriter, r *http.Request) 
 	endpointString := r.Header.Get("X-Endpoints")
 	endpoints := parseEndpoints(endpointString)
 
-	_, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
+	client, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
 	if err != nil {
 		if err == rpctypes.ErrAuthFailed {
 			rw.WriteHeader(http.StatusForbidden)
@@ -26,6 +26,8 @@ func (jh *GenericHandler) Authenticate(rw http.ResponseWriter, r *http.Request) 
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	defer jh.closeEtcdClient(client)
 
 	response := struct {
 		Token    string    `json:"token"`

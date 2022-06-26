@@ -4,6 +4,7 @@ import (
 	"time"
 
 	clientv3 "go.etcd.io/etcd/client/v3"
+	"go.uber.org/zap"
 )
 
 type Config struct {
@@ -42,5 +43,11 @@ func WithAuth(username, password string) func(*Config) {
 	return func(cfg *Config) {
 		cfg.etcdConfig.Username = username
 		cfg.etcdConfig.Password = password
+	}
+}
+
+func WithLogger(logger *zap.Logger) func(*Config) {
+	return func(cfg *Config) {
+		cfg.etcdConfig.Logger = logger
 	}
 }

@@ -42,6 +42,8 @@ func (jh *GenericHandler) getKeys(ctx context.Context, endpoints []string, user,
 		return nil, err
 	}
 
+	defer jh.closeEtcdClient(client)
+
 	var keys *clientv3.GetResponse
 	if client.Username == "root" {
 		keys, err = client.Get(ctx, "/", clientv3.WithKeysOnly(), clientv3.WithPrefix(), clientv3.WithSort(clientv3.SortByKey, clientv3.SortAscend))
@@ -90,4 +92,11 @@ func (jh *GenericHandler) getKeys(ctx context.Context, endpoints []string, user,
 
 func parseEndpoints(header string) []string {
 	return strings.Split(header, ",")
+}
+
+func (jh *GenericHandler) closeEtcdClient(client *etcd.Client) {
+	err := client.Close()
+	if err != nil {
+		jh.logger.Error(context.TODO(), err.Error())
+	}
 }

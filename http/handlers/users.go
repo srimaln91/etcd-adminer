@@ -242,6 +242,8 @@ func (jh *GenericHandler) CreateUser(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	defer jh.closeEtcdClient(client)
+
 	reqDataDecoded := request.CreateUserRequest{}
 	decoder := json.NewDecoder(r.Body)
 
