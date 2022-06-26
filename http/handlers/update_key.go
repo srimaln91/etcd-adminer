@@ -11,12 +11,13 @@ import (
 )
 
 func (jh *GenericHandler) UpdateKey(rw http.ResponseWriter, r *http.Request) {
-	user, pass, _ := r.BasicAuth()
+	requestMeta, ok := r.Context().Value("meta").(request.RequestMeta)
+	if !ok {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
-	endpointString := r.Header.Get("X-Endpoints")
-	endpoints := parseEndpoints(endpointString)
-
-	client, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
+	client, err := etcd.NewClient(requestMeta.Endpoints, etcd.WithAuth(requestMeta.User, requestMeta.Pass))
 	if err != nil {
 		if err == rpctypes.ErrAuthFailed {
 			rw.WriteHeader(http.StatusForbidden)

@@ -12,10 +12,11 @@ import (
 
 func (jh *GenericHandler) CreateDirectory(rw http.ResponseWriter, r *http.Request) {
 
-	user, pass, _ := r.BasicAuth()
-
-	endpointString := r.Header.Get("X-Endpoints")
-	endpoints := parseEndpoints(endpointString)
+	requestMeta, ok := r.Context().Value("meta").(request.RequestMeta)
+	if !ok {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	reqDataDecoded := request.CreateDirectoryRequest{}
 	decoder := json.NewDecoder(r.Body)
@@ -32,7 +33,7 @@ func (jh *GenericHandler) CreateDirectory(rw http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	keys, err := jh.getKeys(r.Context(), endpoints, user, pass)
+	keys, err := jh.getKeys(r.Context(), requestMeta.Endpoints, requestMeta.User, requestMeta.Pass)
 	if err != nil {
 		if err == rpctypes.ErrAuthFailed {
 			rw.WriteHeader(http.StatusForbidden)

@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"strings"
 
 	"github.com/srimaln91/etcd-adminer/config"
 	"github.com/srimaln91/etcd-adminer/etcd"
@@ -86,8 +85,4 @@ func (jh *GenericHandler) getKeys(ctx context.Context, endpoints []string, user,
 	}
 
 	return keys, nil
-}
-
-func parseEndpoints(header string) []string {
-	return strings.Split(header, ",")
 }

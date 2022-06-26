@@ -6,17 +6,19 @@ import (
 	"strings"
 
 	"github.com/srimaln91/etcd-adminer/filetree"
+	"github.com/srimaln91/etcd-adminer/http/request"
 	"go.etcd.io/etcd/api/v3/v3rpc/rpctypes"
 )
 
 func (jh *GenericHandler) GetKeys(rw http.ResponseWriter, r *http.Request) {
 
-	user, pass, _ := r.BasicAuth()
+	requestMeta, ok := r.Context().Value("meta").(request.RequestMeta)
+	if !ok {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
-	endpointString := r.Header.Get("X-Endpoints")
-	endpoints := parseEndpoints(endpointString)
-
-	keys, err := jh.getKeys(r.Context(), endpoints, user, pass)
+	keys, err := jh.getKeys(r.Context(), requestMeta.Endpoints, requestMeta.User, requestMeta.Pass)
 	if err != nil {
 		if err == rpctypes.ErrAuthFailed {
 			rw.WriteHeader(http.StatusForbidden)
