@@ -2,13 +2,16 @@ package handlers
 
 import (
 	"context"
-	"strings"
 
 	"github.com/srimaln91/etcd-adminer/config"
 	"github.com/srimaln91/etcd-adminer/etcd"
 	"github.com/srimaln91/etcd-adminer/log"
 	clientv3 "go.etcd.io/etcd/client/v3"
 )
+
+type MetaKey string
+
+const META_KEY MetaKey = "meta"
 
 type GenericHandler struct {
 	logger           log.Logger
@@ -41,6 +44,8 @@ func (jh *GenericHandler) getKeys(ctx context.Context, endpoints []string, user,
 	if err != nil {
 		return nil, err
 	}
+
+	defer jh.closeEtcdClient(client)
 
 	var keys *clientv3.GetResponse
 	if client.Username == "root" {
@@ -88,6 +93,9 @@ func (jh *GenericHandler) getKeys(ctx context.Context, endpoints []string, user,
 	return keys, nil
 }
 
-func parseEndpoints(header string) []string {
-	return strings.Split(header, ",")
+func (jh *GenericHandler) closeEtcdClient(client *etcd.Client) {
+	err := client.Close()
+	if err != nil {
+		jh.logger.Error(context.TODO(), err.Error())
+	}
 }

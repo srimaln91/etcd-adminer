@@ -5,18 +5,20 @@ import (
 	"net/http"
 
 	"github.com/srimaln91/etcd-adminer/etcd"
+	"github.com/srimaln91/etcd-adminer/http/request"
 	"github.com/srimaln91/etcd-adminer/http/response"
 	"go.etcd.io/etcd/api/v3/v3rpc/rpctypes"
 )
 
 func (jh *GenericHandler) GetKey(rw http.ResponseWriter, r *http.Request) {
 
-	user, pass, _ := r.BasicAuth()
+	requestMeta, ok := r.Context().Value(META_KEY).(request.RequestMeta)
+	if !ok {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
-	endpointString := r.Header.Get("X-Endpoints")
-	endpoints := parseEndpoints(endpointString)
-
-	client, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
+	client, err := etcd.NewClient(requestMeta.Endpoints, etcd.WithAuth(requestMeta.User, requestMeta.Pass))
 	if err != nil {
 		if err == rpctypes.ErrAuthFailed {
 			rw.WriteHeader(http.StatusForbidden)
@@ -26,6 +28,8 @@ func (jh *GenericHandler) GetKey(rw http.ResponseWriter, r *http.Request) {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	defer jh.closeEtcdClient(client)
 
 	queryParams := r.URL.Query()
 	requestedKey := queryParams.Get("key")

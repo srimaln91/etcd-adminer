@@ -6,17 +6,19 @@ import (
 	"time"
 
 	"github.com/srimaln91/etcd-adminer/etcd"
+	"github.com/srimaln91/etcd-adminer/http/request"
 	"go.etcd.io/etcd/api/v3/v3rpc/rpctypes"
 )
 
 func (jh *GenericHandler) Authenticate(rw http.ResponseWriter, r *http.Request) {
 
-	user, pass, _ := r.BasicAuth()
+	requestMeta, ok := r.Context().Value(META_KEY).(request.RequestMeta)
+	if !ok {
+		rw.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
-	endpointString := r.Header.Get("X-Endpoints")
-	endpoints := parseEndpoints(endpointString)
-
-	_, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
+	client, err := etcd.NewClient(requestMeta.Endpoints, etcd.WithAuth(requestMeta.User, requestMeta.Pass))
 	if err != nil {
 		if err == rpctypes.ErrAuthFailed {
 			rw.WriteHeader(http.StatusForbidden)
@@ -26,6 +28,8 @@ func (jh *GenericHandler) Authenticate(rw http.ResponseWriter, r *http.Request) 
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	defer jh.closeEtcdClient(client)
 
 	response := struct {
 		Token    string    `json:"token"`

@@ -3,7 +3,6 @@ package log
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -49,7 +48,6 @@ func NewLogger(level Level) (Logger, error) {
 	}
 
 	lev := zapcore.Level(logLevel)
-	fmt.Println(lev.String())
 	cfg := zap.Config{
 		Level:         zap.NewAtomicLevelAt(lev),
 		Encoding:      "json",
