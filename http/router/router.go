@@ -24,7 +24,7 @@ func NewRouter(logger log.Logger) (http.Handler, error) {
 	r.Use(CORS)
 
 	r.HandleFunc("/api/getconfig", requestHandler.GetConfig).Methods(http.MethodGet, http.MethodOptions)
-	r.HandleFunc("/api/auth", requestHandler.Authenticate).Methods(http.MethodPost, http.MethodOptions)
+	r.Handle("/api/auth", validator.ValidateRequest(requestHandler.Authenticate)).Methods(http.MethodPost, http.MethodOptions)
 
 	r.Handle("/api/keys", validator.ValidateRequest(requestHandler.GetKey)).Methods(http.MethodGet, http.MethodOptions).Queries("key", "")
 	r.Handle("/api/keys", validator.ValidateRequest(requestHandler.GetKeys)).Methods(http.MethodGet, http.MethodOptions)

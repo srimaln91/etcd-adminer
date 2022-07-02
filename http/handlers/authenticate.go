@@ -15,10 +15,20 @@ func (jh *GenericHandler) Authenticate(rw http.ResponseWriter, r *http.Request) 
 	requestMeta, ok := r.Context().Value(META_KEY).(request.RequestMeta)
 	if !ok {
 		rw.WriteHeader(http.StatusInternalServerError)
+		jh.logger.Error(r.Context(), "invalid request meta", requestMeta)
 		return
 	}
 
-	client, err := etcd.NewClient(requestMeta.Endpoints, etcd.WithAuth(requestMeta.User, requestMeta.Pass))
+	client, err := etcd.NewClient(requestMeta.Endpoints)
+	if err != nil {
+		rw.WriteHeader(http.StatusInternalServerError)
+		jh.logger.Error(r.Context(), err.Error())
+		return
+	}
+
+	defer jh.closeEtcdClient(client)
+
+	s, err := client.Authenticate(r.Context(), requestMeta.User, requestMeta.Pass)
 	if err != nil {
 		if err == rpctypes.ErrAuthFailed {
 			rw.WriteHeader(http.StatusForbidden)
@@ -26,16 +36,15 @@ func (jh *GenericHandler) Authenticate(rw http.ResponseWriter, r *http.Request) 
 		}
 
 		rw.WriteHeader(http.StatusInternalServerError)
+		jh.logger.Error(r.Context(), err.Error())
 		return
 	}
-
-	defer jh.closeEtcdClient(client)
 
 	response := struct {
 		Token    string    `json:"token"`
 		CreateAt time.Time `json:"created_at"`
 	}{
-		Token:    "token",
+		Token:    s.Token,
 		CreateAt: time.Now(),
 	}
 

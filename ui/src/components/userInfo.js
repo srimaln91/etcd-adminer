@@ -9,23 +9,21 @@ import Select from '@mui/material/Select';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
 import DataService from '../data/service'
 
 export default function UserInfo(props) {
 
     const [selectedRole, setSelectedRole] = React.useState('');
     const [user, setUser] = React.useState({ roles: [] });
-    const dataService = new DataService();
 
-    useEffect(() => {
-        fetchUser(props.userName);
-    },[]);
+    const dataService = new DataService();
 
     let fetchUser = async (username) => {
         try {
             let userDetails = await dataService.FetchUser(username);
-            if(user.roles == null) {
-                user.roles = [];
+            if(userDetails.roles == null) {
+                userDetails.roles = [];
             }
             setUser(userDetails);
         } catch (error) {
@@ -33,6 +31,12 @@ export default function UserInfo(props) {
             console.error(error);
         }
     };
+
+    useEffect(() => {
+        fetchUser(props.userName);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[props.userName]);
 
     const handleClickChip = () => {
         // TODO: This should point user into the role details page
@@ -98,17 +102,30 @@ export default function UserInfo(props) {
                             m: 2,
                         }}
                     >
-                        <Stack direction="row" spacing={1}>
-                            {user.roles.map((role) => (
-                                <Chip
-                                    key={role}
-                                    label={role}
-                                    variant="outlined"
-                                    onClick={handleClickChip}
-                                    onDelete={() => { handleDelete(role) }}
-                                />
-                            ))}
-                        </Stack>
+
+                        {
+                            ((user) => {
+                                if(user.roles.length < 1 && user.name !== undefined) {
+                                    return(<Alert severity="warning">No roles assigned!</Alert>)
+                                } else{
+                                    return(
+                                        <Stack direction="row" spacing={1}>
+                                            
+                                            {user.roles.map((role) => (
+                                                <Chip
+                                                    key={role}
+                                                    label={role}
+                                                    variant="outlined"
+                                                    onClick={handleClickChip}
+                                                    onDelete={() => { handleDelete(role) }}
+                                                />
+                                            ))}
+                                        </Stack>
+                                    )
+                                }
+                            })(user)
+                        }
+                        
                     </Paper>
                 </Grid>
                 <Grid item xs={12}>
