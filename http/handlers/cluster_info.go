@@ -23,7 +23,7 @@ func (jh *GenericHandler) ClusterInfo(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	client, err := etcd.NewClient(requestMeta.Endpoints, etcd.WithAuth(requestMeta.User, requestMeta.Pass))
+	client, err := etcd.NewClient(requestMeta.Backend.Endpoints(), etcd.WithAuth(requestMeta.User, requestMeta.Pass))
 	if err != nil {
 		if err == rpctypes.ErrAuthFailed {
 			rw.WriteHeader(http.StatusForbidden)
@@ -58,7 +58,7 @@ func (jh *GenericHandler) ClusterInfo(rw http.ResponseWriter, r *http.Request) {
 	for _, member := range members.Members {
 
 		leaderStatus := leaderStatusUnknown
-		endpointStatus, err := client.Status(r.Context(), member.GetClientURLs()[0])
+		endpointStatus, err := client.Status(r.Context(), member.GetPeerURLs()[0])
 		if err != nil {
 			jh.logger.Error(r.Context(), err.Error())
 			rw.WriteHeader(http.StatusInternalServerError)

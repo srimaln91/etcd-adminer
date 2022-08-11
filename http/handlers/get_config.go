@@ -9,11 +9,16 @@ import (
 )
 
 func (jh *GenericHandler) GetConfig(rw http.ResponseWriter, r *http.Request) {
-	response := response.GetConfig{
-		Endpoints: config.AppConfig.ETCD.Endpoints,
+	cfg := response.GetConfig{}
+
+	for _, cluster := range config.AppConfig.ETCD {
+		cfg.Clusters = append(cfg.Clusters, response.Cluster{
+			Name:      cluster.Name,
+			Endpoints: cluster.Endpoints,
+		})
 	}
 
-	responseBytes, err := json.Marshal(response)
+	responseBytes, err := json.Marshal(cfg)
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return

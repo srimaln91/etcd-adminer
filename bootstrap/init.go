@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/srimaln91/etcd-adminer/config"
+	"github.com/srimaln91/etcd-adminer/etcd"
 	"github.com/srimaln91/etcd-adminer/http/router"
 	"github.com/srimaln91/etcd-adminer/http/server"
 	"github.com/srimaln91/etcd-adminer/log"
@@ -32,8 +33,18 @@ func Init() {
 		panic(err)
 	}
 
+	// Create admin backends
+	backendProvider := etcd.NewBackendProvider()
+
+	for _, cluster := range cfg.ETCD {
+		err := backendProvider.RegisterBackend(cluster.Name, cluster.Endpoints, cluster.SuperAdmin.UserName, cluster.SuperAdmin.Password)
+		if err != nil {
+			logger.Fatal(context.TODO(), err.Error())
+		}
+	}
+
 	// Init Http handler
-	httpHandler, _ := router.NewRouter(logger)
+	httpHandler, _ := router.NewRouter(logger, backendProvider)
 
 	// Init Http server
 	httpSrv, err := server.Start(fmt.Sprintf(":%d", cfg.HTTP.Port), httpHandler, logger)

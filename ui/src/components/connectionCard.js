@@ -74,6 +74,9 @@ export default function ConnectionCard(props) {
             />
             <CardContent>
                 <Typography sx={{ mb: 1.5 }} color="text.secondary">
+                    Cluster: {props.connection.BackEnd}
+                </Typography>
+                <Typography sx={{ mb: 1.5 }} color="text.secondary">
                     Endpoints: {props.connection.Endpoints}
                 </Typography>
                 <Typography sx={{ mb: 1.5 }} color="text.secondary">

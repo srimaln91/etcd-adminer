@@ -19,7 +19,7 @@ func (jh *GenericHandler) Authenticate(rw http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	client, err := etcd.NewClient(requestMeta.Endpoints)
+	client, err := etcd.NewClient(requestMeta.Backend.Endpoints())
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		jh.logger.Error(r.Context(), err.Error())

@@ -4,29 +4,27 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"strings"
 
+	"github.com/srimaln91/etcd-adminer/etcd"
 	"github.com/srimaln91/etcd-adminer/http/handlers"
 	"github.com/srimaln91/etcd-adminer/http/request"
 )
 
-type requestValidateMiddleware struct{}
+type requestValidateMiddleware struct {
+	backendProvider *etcd.BackEndProvider
+}
 
 var ErrCredentialsNotProvided = errors.New("credentials are not provided")
 var ErrEndpointsNotProvided = errors.New("endpoints are not provided")
 var ErrAddressNotParseable = errors.New("can not parse ETCD endpoint address")
 
-func NewRequestValidateMiddleware() *requestValidateMiddleware {
-	return new(requestValidateMiddleware)
+func NewRequestValidateMiddleware(backendProvider *etcd.BackEndProvider) *requestValidateMiddleware {
+	return &requestValidateMiddleware{
+		backendProvider: backendProvider,
+	}
 }
 
-func parseEndpoints(header string) ([]string, error) {
-	addresses := strings.Split(header, ",")
-
-	return addresses, nil
-}
-
-func getRequestMeta(r *http.Request) (meta request.RequestMeta, err error) {
+func (rvm *requestValidateMiddleware) getRequestMeta(r *http.Request) (meta request.RequestMeta, err error) {
 	user, pass, ok := r.BasicAuth()
 	if !ok {
 		return meta, errors.New("credentials are not provided")
@@ -35,12 +33,12 @@ func getRequestMeta(r *http.Request) (meta request.RequestMeta, err error) {
 	meta.User = user
 	meta.Pass = pass
 
-	endpointString := r.Header.Get("X-Endpoints")
-	if endpointString == "" {
-		return meta, errors.New("endpoints are not provided")
+	backend := r.Header.Get("X-Backend")
+	if backend == "" {
+		return meta, errors.New("backend is not provided")
 	}
 
-	meta.Endpoints, err = parseEndpoints(endpointString)
+	meta.Backend, err = rvm.backendProvider.GetBackend(backend)
 	if err != nil {
 		return meta, nil
 	}
@@ -50,7 +48,7 @@ func getRequestMeta(r *http.Request) (meta request.RequestMeta, err error) {
 
 func (rvm *requestValidateMiddleware) ValidateRequest(next http.HandlerFunc) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		meta, err := getRequestMeta(r)
+		meta, err := rvm.getRequestMeta(r)
 		if err != nil {
 			w.WriteHeader(http.StatusNotAcceptable)
 			return
