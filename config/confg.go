@@ -1,7 +1,7 @@
 package config
 
 import (
-	"io/ioutil"
+	"os"
 
 	"github.com/srimaln91/etcd-adminer/log"
 	yaml "gopkg.in/yaml.v3"
@@ -27,7 +27,7 @@ type Config struct {
 var AppConfig *Config
 
 func Parse(path string) (*Config, error) {
-	file, err := ioutil.ReadFile(path)
+	file, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
