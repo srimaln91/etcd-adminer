@@ -9,6 +9,10 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 import { SessionStore, Session } from '../storage/session'
 import DataService from '../data/service'
 
@@ -26,9 +30,12 @@ class NewConnectionComponent extends React.Component {
             errorMessage: "Something went wrong!",
             successMessage: "Success!",
             name: "",
-            endpoints: "",
+            backEnds: [],
+            selectedBackendIndex: 0,
+            endpoint: "",
             username: "",
             password: "",
+            backendName: "",
             sessions: {},
             activeConnection: {}
         }
@@ -44,7 +51,7 @@ class NewConnectionComponent extends React.Component {
         this.dataService = new DataService();
     }
 
-    handleTest = async() => {
+    handleTest = async () => {
         this.setState({
             loading: true,
             tested: false,
@@ -54,9 +61,9 @@ class NewConnectionComponent extends React.Component {
             errorMessage: ""
         })
 
-        try{
-            let status = await this.dataService.TestConnection(this.state.username, this.state.password, this.state.endpoints);
-            if(status === true){
+        try {
+            let status = await this.dataService.TestConnection(this.state.username, this.state.password, this.state.backEnds[this.state.selectedBackendIndex].name);
+            if (status === true) {
                 this.setState({
                     loading: false,
                     tested: true,
@@ -73,7 +80,7 @@ class NewConnectionComponent extends React.Component {
                     errorMessage: "Invalid Credentials!"
                 })
             }
-        } catch(error){
+        } catch (error) {
             this.setState({
                 loading: false,
                 tested: false,
@@ -87,8 +94,8 @@ class NewConnectionComponent extends React.Component {
 
     handleChange(e) {
         switch (e.target.name) {
-            case "endpoints":
-                this.setState({ endpoints: e.target.value })
+            case "backend":
+                this.setState({ selectedBackendIndex: e.target.value })
                 break;
             case "username":
                 this.setState({ username: e.target.value })
@@ -105,17 +112,17 @@ class NewConnectionComponent extends React.Component {
     }
 
     handleSubmit() {
-        let session = new Session(
+        this.sessionStore.Add(new Session(
             this.state.name,
-            this.state.endpoints,
+            this.state.backEnds[this.state.selectedBackendIndex].name,
+            this.state.backEnds[this.state.selectedBackendIndex].endpoints,
             this.state.username,
             this.state.password
-        );
-        this.sessionStore.Add(session);
+        ));
 
         // enable nav menu items
         this.props.forceRefreshNav();
-        
+
         this.setState({
             sessions: this.sessionStore.GetAll()
         });
@@ -138,7 +145,7 @@ class NewConnectionComponent extends React.Component {
         })
     }
 
-    componentDidMount = async() => {
+    componentDidMount = async () => {
 
         let sessions = this.sessionStore.GetAll();
         if (sessions === null) {
@@ -146,18 +153,22 @@ class NewConnectionComponent extends React.Component {
         }
 
         this.setState({
-            username: localStorage.getItem('user'),
-            password: localStorage.getItem('password'),
-            name: localStorage.getItem('name'),
             sessions: sessions
         })
 
-        try{
+        try {
             let config = await this.dataService.GetConfig();
+
+            let backEnds = [];
+            config.clusters.forEach(cluster => {
+                backEnds.push({ endpoints: cluster.endpoints, name: cluster.name });
+            })
+
             this.setState({
-                endpoints: config.endpoints.join(",")
+                backEnds: backEnds,
+                selectedBackendIndex: undefined
             });
-        }catch(error){
+        } catch (error) {
             // TODO: display an error
             console.error(error);
         }
@@ -205,18 +216,23 @@ class NewConnectionComponent extends React.Component {
                                 />
                             </Grid>
                             <Grid item xs={12} sm={12}>
-                                <TextField
-                                    required
-                                    disabled
-                                    id="endpoints"
-                                    name="endpoints"
-                                    label="Endpoints"
-                                    value={this.state.endpoints}
-                                    fullWidth
-                                    autoComplete="given-name"
-                                    variant="standard"
-                                    onChange={this.handleChange}
-                                />
+                                <FormControl fullWidth>
+                                    <InputLabel id="backend-lbl">BackEnd</InputLabel>
+                                    <Select
+                                        labelId="backend-lbl"
+                                        id="backend"
+                                        value={this.state.selectedBackendIndex !== undefined ? this.state.selectedBackendIndex: ""}
+                                        label="Backend"
+                                        name="backend"
+                                        onChange={this.handleChange}
+                                    >
+                                        {
+                                            this.state.backEnds.map((be, i) => {
+                                                return <MenuItem key={i} value={i}>{be.name + "[" + be.endpoints + "]"}</MenuItem>
+                                            })
+                                        }
+                                    </Select>
+                                </FormControl>
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField

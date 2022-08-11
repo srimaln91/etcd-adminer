@@ -14,12 +14,13 @@ type Config struct {
 	Logger struct {
 		Level log.Level `yaml:"level"`
 	} `yaml:"logger"`
-	ETCD struct {
+	ETCD []struct {
+		Name       string
 		Endpoints  []string `yaml:"endpoints"`
 		SuperAdmin struct {
 			UserName string `yaml:"username"`
 			Password string `yaml:"password"`
-		}
+		} `yaml:"superadmin"`
 	} `yaml:"etcd"`
 }
 

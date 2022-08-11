@@ -33,7 +33,7 @@ func (jh *GenericHandler) CreateDirectory(rw http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	keys, err := jh.getKeys(r.Context(), requestMeta.Endpoints, requestMeta.User, requestMeta.Pass)
+	keys, err := jh.getKeys(r.Context(), requestMeta.Backend, requestMeta.User, requestMeta.Pass)
 	if err != nil {
 		if err == rpctypes.ErrAuthFailed {
 			rw.WriteHeader(http.StatusForbidden)

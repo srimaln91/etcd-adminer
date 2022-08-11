@@ -32,7 +32,7 @@ export default class DataService {
                         password: activeSession.Password
                     },
                     headers: {
-                        "X-Endpoints": activeSession.Endpoints
+                        "X-Backend": activeSession.BackEnd
                     },
                     timeout: 10000,
                 })
@@ -47,7 +47,8 @@ export default class DataService {
         })
     }
 
-    TestConnection = (username, password, endpoints) => {
+    TestConnection = (username, password, backend) => {
+        // let activeSession = this.sessionStore.GetActiveSession()
         return new Promise(async (resolve, reject) => {
             try {
                 let response = await axios.post(`/api/auth`, null, {
@@ -56,7 +57,7 @@ export default class DataService {
                         password: password
                     },
                     headers: {
-                        "X-Endpoints": endpoints
+                        "X-Backend": backend
                     }
                 });
                 if (response.status === 200) {
@@ -86,7 +87,7 @@ export default class DataService {
                         password: activeSession.Password
                     },
                     headers: {
-                        "X-Endpoints": activeSession.Endpoints
+                        "X-Backend": activeSession.BackEnd
                     }
                 })
 
@@ -120,7 +121,7 @@ export default class DataService {
                         password: activeSession.Password
                     },
                     headers: {
-                        "X-Endpoints": activeSession.Endpoints
+                        "X-Backend": activeSession.BackEnd
                     }
                 });
 
@@ -147,7 +148,7 @@ export default class DataService {
                         password: activeSession.Password
                     },
                     headers: {
-                        "X-Endpoints": activeSession.Endpoints
+                        "X-Backend": activeSession.BackEnd
                     }
                 });
 
@@ -176,7 +177,7 @@ export default class DataService {
                         password: activeSession.Password
                     },
                     headers: {
-                        "X-Endpoints": activeSession.Endpoints
+                        "X-Backend": activeSession.BackEnd
                     }
                 })
 
@@ -204,7 +205,7 @@ export default class DataService {
                         password: activeSession.Password
                     },
                     headers: {
-                        "X-Endpoints": activeSession.Endpoints
+                        "X-Backend": activeSession.BackEnd
                     }
                 });
 
@@ -230,7 +231,7 @@ export default class DataService {
                         password: activeSession.Password
                     },
                     headers: {
-                        "X-Endpoints": activeSession.Endpoints
+                        "X-Backend": activeSession.BackEnd
                     },
                     data: {
                         key: key,
@@ -258,7 +259,7 @@ export default class DataService {
                         password: activeSession.Password
                     },
                     headers: {
-                        "X-Endpoints": activeSession.Endpoints
+                        "X-Backend": activeSession.BackEnd
                     },
                 });
 
@@ -283,7 +284,7 @@ export default class DataService {
                         password: activeSession.Password
                     },
                     headers: {
-                        "X-Endpoints": activeSession.Endpoints
+                        "X-Backend": activeSession.BackEnd
                     }
                 });
 
@@ -309,7 +310,7 @@ export default class DataService {
                         password: activeSession.Password
                     },
                     headers: {
-                        "X-Endpoints": activeSession.Endpoints
+                        "X-Backend": activeSession.BackEnd
                     }
                 });
 
@@ -335,7 +336,7 @@ export default class DataService {
                         password: activeSession.Password
                     },
                     headers: {
-                        "X-Endpoints": activeSession.Endpoints
+                        "X-Backend": activeSession.BackEnd
                     }
                 })
 
@@ -361,7 +362,7 @@ export default class DataService {
                         password: activeSession.Password
                     },
                     headers: {
-                        "X-Endpoints": activeSession.Endpoints
+                        "X-Backend": activeSession.BackEnd
                     }
                 });
 
@@ -385,7 +386,7 @@ export default class DataService {
                         password: activeSession.Password
                     },
                     headers: {
-                        "X-Endpoints": activeSession.Endpoints
+                        "X-Backend": activeSession.BackEnd
                     }
                 });
 

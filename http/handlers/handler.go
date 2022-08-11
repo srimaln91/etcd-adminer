@@ -15,32 +15,37 @@ const META_KEY MetaKey = "meta"
 
 type GenericHandler struct {
 	logger           log.Logger
-	superAdminClient *etcd.Client
+	superAdminClient map[string]*etcd.Client
 }
 
 func NewHTTPHandler(logger log.Logger) (*GenericHandler, error) {
 
-	superAdminClient, err := etcd.NewClient(
-		config.AppConfig.ETCD.Endpoints,
-		etcd.WithAuth(
-			config.AppConfig.ETCD.SuperAdmin.UserName,
-			config.AppConfig.ETCD.SuperAdmin.Password,
-		),
-	)
+	superAdminClients := make(map[string]*etcd.Client)
+	for _, cluster := range config.AppConfig.ETCD {
+		superAdminClient, err := etcd.NewClient(
+			cluster.Endpoints,
+			etcd.WithAuth(
+				cluster.SuperAdmin.UserName,
+				cluster.SuperAdmin.Password,
+			),
+		)
 
-	if err != nil {
-		return nil, err
+		if err != nil {
+			return nil, err
+		}
+
+		superAdminClients[cluster.Name] = superAdminClient
 	}
 
 	return &GenericHandler{
 		logger:           logger,
-		superAdminClient: superAdminClient,
+		superAdminClient: superAdminClients,
 	}, nil
 }
 
-func (jh *GenericHandler) getKeys(ctx context.Context, endpoints []string, user, pass string) (*clientv3.GetResponse, error) {
+func (jh *GenericHandler) getKeys(ctx context.Context, backend *etcd.BackEnd, user, pass string) (*clientv3.GetResponse, error) {
 
-	client, err := etcd.NewClient(endpoints, etcd.WithAuth(user, pass))
+	client, err := etcd.NewClient(backend.Endpoints(), etcd.WithAuth(user, pass))
 	if err != nil {
 		return nil, err
 	}
@@ -54,14 +59,14 @@ func (jh *GenericHandler) getKeys(ctx context.Context, endpoints []string, user,
 			return nil, err
 		}
 	} else {
-		resp, err := jh.superAdminClient.UserGet(ctx, client.Username)
+		resp, err := jh.superAdminClient[backend.Name()].UserGet(ctx, client.Username)
 		if err != nil {
 			return nil, err
 		}
 
 		var permissions = make([]string, 0)
 		for _, role := range resp.Roles {
-			roleResponse, err := jh.superAdminClient.RoleGet(ctx, role)
+			roleResponse, err := jh.superAdminClient[backend.Name()].RoleGet(ctx, role)
 			if err != nil {
 				return nil, err
 			}

@@ -1,13 +1,15 @@
 class Session {
     Name;
     Endpoints;
+    BackEnd;
     UserName;
     Password;
     isActive;
 
-    constructor(name, endpoints, username, password) {
+    constructor(name, backend, endpoints, username, password) {
         this.Name = name;
         this.Endpoints = endpoints;
+        this.BackEnd = backend
         this.UserName = username;
         this.Password = password;
     }

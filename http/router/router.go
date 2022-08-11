@@ -5,12 +5,13 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/srimaln91/etcd-adminer/etcd"
 	"github.com/srimaln91/etcd-adminer/http/handlers"
 	"github.com/srimaln91/etcd-adminer/http/middlewares"
 	"github.com/srimaln91/etcd-adminer/log"
 )
 
-func NewRouter(logger log.Logger) (http.Handler, error) {
+func NewRouter(logger log.Logger, backendProvider *etcd.BackEndProvider) (http.Handler, error) {
 
 	// Init handler
 	requestHandler, err := handlers.NewHTTPHandler(logger)
@@ -18,7 +19,7 @@ func NewRouter(logger log.Logger) (http.Handler, error) {
 		logger.Fatal(context.Background(), err.Error())
 	}
 
-	validator := middlewares.NewRequestValidateMiddleware()
+	validator := middlewares.NewRequestValidateMiddleware(backendProvider)
 
 	r := mux.NewRouter()
 	r.Use(CORS)

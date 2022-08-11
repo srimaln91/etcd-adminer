@@ -21,6 +21,7 @@ class ConnectionComponent extends React.Component {
         this.sessionStore = new SessionStore();
 
         this.state = {
+            backEnds: [],
             sessions: {},
             localSessionsFound: true,
             activeConnection: this.sessionStore.GetActiveSession(),
@@ -71,10 +72,14 @@ class ConnectionComponent extends React.Component {
 
         try {
             let config = await this.dataService.GetConfig();
-            this.setState({
-                endpoints: config.endpoints.join(",")
+            let endpoints = [];
+            config.clusters.forEach(backend => {
+                let backendString = backend.endpoints.join(",") + backend.name;
+                endpoints.push(backendString);
             });
-
+            this.setState({
+                endpoints: endpoints
+            });
         } catch (error) {
             console.error(error);
             this.setState({
