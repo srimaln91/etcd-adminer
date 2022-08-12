@@ -41,6 +41,8 @@ func Init() {
 		if err != nil {
 			logger.Fatal(context.TODO(), err.Error())
 		}
+
+		logger.Info(context.TODO(), fmt.Sprintf("registered backend %s with endpoints %v", cluster.Name, cluster.Endpoints))
 	}
 
 	// Init Http handler
