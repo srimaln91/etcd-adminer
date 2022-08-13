@@ -12,20 +12,20 @@ export default function ClusterInfo(props) {
     const [errorMessage, setErrorMessage] = useState("");
     const dataService = new DataService();
 
+    const fetchData = async () => {
+        try {
+            let clusterInfo = await dataService.GetClusterInfo();
+            setClusterInfo(clusterInfo);
+            setErrorMessage("");
+        } catch (err) {
+            console.error(err);
+            setErrorMessage("Something went wrong!")
+        }
+    };
+    
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                let clusterInfo = await dataService.GetClusterInfo();
-                setClusterInfo(clusterInfo);
-                setErrorMessage("");
-            } catch (err) {
-                console.error(err);
-                setErrorMessage("Something went wrong!")
-            }
-        };
-
         fetchData();
-    });
+    }, [props]);
 
     const getAlert = () => {
         if (errorMessage !== "") {
