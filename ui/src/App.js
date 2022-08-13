@@ -16,7 +16,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import NavMenu from './components/navMenu';
 import KeysComponent from './components/keys';
 import ConnectionComponent from './components/connection';
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Paper from '@mui/material/Paper';
 import ClusterInfo from './components/cluster';
 import UserList from './components/userList';
@@ -175,7 +175,13 @@ function App() {
             <Container maxWidth={false} sx={{ mt: 4, mb: 4 }}>
               <Routes>
                 <Route path="/" element={<ConnectionComponent />} />
-                <Route path="connection" element={<ConnectionComponent />} />
+                <Route exact path="connection" element={<ConnectionComponent />} render={() => (
+                  isLocalSessionAvailable ? (
+                    <Navigate to={"/connection/new"} replace={true} />
+                  ) : (
+                    <ConnectionComponent />
+                  )
+                )} />
                 <Route path="connection/new" element={<NewConnectionComponent forceRefreshNav={forceRefreshNav} />} />
                 <Route path="cluster" element={<ClusterInfo />} />
                 <Route path="keys" element={<KeysComponent />} />
