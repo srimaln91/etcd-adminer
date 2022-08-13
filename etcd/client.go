@@ -1,7 +1,6 @@
 package etcd
 
 import (
-	"context"
 	"time"
 
 	clientv3 "go.etcd.io/etcd/client/v3"
@@ -18,14 +17,10 @@ type Client struct {
 
 func NewClient(endpoints []string, options ...func(*Config)) (*Client, error) {
 
-	dialCtx, cancel := context.WithTimeout(context.Background(), time.Second*5)
-	defer cancel()
-
 	cfg := Config{
 		etcdConfig: clientv3.Config{
 			Endpoints:   endpoints,
 			DialTimeout: time.Second * 5,
-			Context:     dialCtx,
 		},
 	}
 
