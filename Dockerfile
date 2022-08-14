@@ -38,7 +38,7 @@ FROM alpine:3.9
 RUN apk add ca-certificates
 
 COPY --from=build_go /tmp/etcd-adminer/api/etcd-adminer-linux-amd64 /app/etcd-adminer-linux-amd64
-COPY config.yaml /app/config.yaml
+COPY config.default.yaml /app/config.yaml
 
 COPY --from=build_ui /tmp/etcd-adminer/ui/build /app/static
 
