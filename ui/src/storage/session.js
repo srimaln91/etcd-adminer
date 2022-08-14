@@ -15,14 +15,15 @@ class Session {
     }
 }
 
+class ErrorNoSessionFound extends Error {}
+
 class SessionStore {
     key = "sessions"
-    activeSession = "activeSession"
 
     _getLocalSessions() {
         let data = localStorage.getItem(this.key);
-        if (data === "") {
-            throw new Error('no local sessions found');
+        if (data === "" || data === null) {
+            return null;
         }
         let sessions = JSON.parse(data);
         return sessions;
@@ -38,18 +39,20 @@ class SessionStore {
     }
 
     GetAll() {
-        return this._getLocalSessions();
+        try {
+            return this._getLocalSessions();
+        } catch(e) {
+            return null
+        }
     }
 
     Add(session) {
         let sessions = this._getLocalSessions();
         if (sessions === "" || sessions == null) {
             sessions = {};
-            session.isActive = true
         }
 
         sessions[session.Name] = session;
-        this.SetActiveSession(session);
         this._setLocalSessions(sessions);
     }
 
@@ -60,21 +63,34 @@ class SessionStore {
     }
 
     SetActiveSession(session) {
-        localStorage.setItem(this.activeSession, JSON.stringify(session));
+        let sessions = this._getLocalSessions();
+        Object.keys(sessions).forEach((key) => {
+            sessions[key].Name === session.Name ? sessions[key].isActive = true : sessions[key].isActive = false
+        });
+
+        console.log(sessions);
+        this._setLocalSessions(sessions);
     }
 
     GetActiveSession() {
-        let data = localStorage.getItem(this.activeSession);
-        if (data === "" || data === null) {
-            return null
+        try {
+            let sessions = this._getLocalSessions();
+            return Object.values(sessions).find((obj) => {
+                return obj.isActive
+            });
+        } catch (e) {
+            throw e;
         }
-
-        return JSON.parse(data);
     }
 
     IsLocalSessionAvailable() {
         try {
             let sessions = this._getLocalSessions();
+
+            if(sessions === null) {
+                return false;
+            }
+
             if (Object.keys(sessions).length <= 0) {
                 return false;
             }

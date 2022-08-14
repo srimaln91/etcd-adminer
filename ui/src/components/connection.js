@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState } from 'react';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -12,47 +12,22 @@ import { Navigate } from "react-router-dom";
 
 export default function Connection(props) {
 
-    const sessionStore = useMemo(() => {
-        return new SessionStore();
-    }, [])
+    const sessionStore = new SessionStore();
 
-    const [sessions, setsessions] = useState({});
-    const [localSessionsFound, setlocalSessionsFound] = useState(true);
-    const [activeConnection, setactiveConnection] = useState({});
+    const [sessions, setSessions] = useState(new SessionStore().GetAll());
     const [errorMessage, seterrorMessage] = useState("");
 
     const useSession = (session) => {
-
         clearAlert();
-
         sessionStore.SetActiveSession(session);
-        setactiveConnection(session);
-
-        localStorage.setItem('endpoints', session.Endpoints);
-        localStorage.setItem('user', session.UserName);
-        localStorage.setItem('password', session.Password);
-        localStorage.setItem('name', session.Name);
+        setSessions(sessionStore.GetAll());
     }
 
     const deleteSession = (session) => {
         clearAlert();
         sessionStore.Delete(session);
-        setsessions(this.sessionStore.GetAll());
+        setSessions(sessionStore.GetAll);
     }
-
-    const fetchData = useCallback(async () => {
-        let sessions = sessionStore.GetAll();
-        if (sessions === null) {
-            setlocalSessionsFound(false);
-            sessions = {};
-        }
-
-        setsessions(sessions);
-    }, [sessionStore])
-
-    useEffect(() => {
-        fetchData();
-    }, [props, fetchData]);
 
     const getAlert = () => {
         if (errorMessage !== "") {
@@ -85,11 +60,12 @@ export default function Connection(props) {
                         </Typography>
                     </Grid>
 
-                    {!localSessionsFound && (
+                    {!sessionStore.IsLocalSessionAvailable() && (
                         <Navigate to={"/connection/new"} replace={true} />
                     )}
 
-                    {Object.keys(sessions).map((key) => {
+                    {
+                    sessions !== null && Object.keys(sessions).map((key) => {
                         let conn = sessions[key];
                         return (
                             <Grid item xs={6} sm={3}>
@@ -98,7 +74,7 @@ export default function Connection(props) {
                                         connection={conn}
                                         useSession={useSession}
                                         deleteSession={deleteSession}
-                                        isActive={activeConnection.Name === conn.Name}
+                                        isActive={conn.isActive}
                                     />
                                 </React.Fragment>
                             </Grid>
