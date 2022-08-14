@@ -5,16 +5,6 @@ logger:
   level: "DEBUG"
 
 etcd:
-- name: "CORE"
-  endpoints:
-    # - "0.0.0.0:23791"
-    # - "0.0.0.0:23792"
-    # - "0.0.0.0:23793"
-    - 10.101.110.198:2379
-  superadmin:
-    username: root
-    password: root
-
 - name: "LOCAL"
   endpoints:
     - "0.0.0.0:23791"
