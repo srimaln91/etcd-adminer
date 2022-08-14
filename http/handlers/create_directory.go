@@ -56,14 +56,14 @@ func (jh *GenericHandler) CreateDirectory(rw http.ResponseWriter, r *http.Reques
 		path := segments[:length-1]
 		filename := segments[length-1]
 
-		fileTree.AddFile(fileTree.Root, path, filename)
+		fileTree.AddFile(fileTree.Root, path, filename, false)
 	}
 
 	// Add virtual directory
 	if reqDataDecoded.IsDirectory {
-		fileTree.AddDirectory(fileTree.Root, path[1:])
+		fileTree.AddDirectory(fileTree.Root, path[1:], true)
 	} else {
-		fileTree.AddFile(fileTree.Root, path[1:len(path)-1], path[len(path)-1])
+		fileTree.AddFile(fileTree.Root, path[1:len(path)-1], path[len(path)-1], true)
 	}
 
 	respData, err := json.Marshal(fileTree.Root)

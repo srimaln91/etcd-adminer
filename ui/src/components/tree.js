@@ -69,6 +69,12 @@ export default function FSNavigator(props) {
     event.preventDefault();
     let key = event.target.parentElement.parentElement.getAttribute("data-index");
     let type = event.target.parentElement.parentElement.getAttribute("type");
+    let isVirtual = event.target.parentElement.parentElement.getAttribute("data-is-virtual");
+
+    if(isVirtual === "true") {
+      return
+    }
+    
     if (type === "file") {
       props.onKeyClick(key);
     }
@@ -81,6 +87,7 @@ export default function FSNavigator(props) {
       label={nodes.name}
       type={nodes.type}
       data-index={nodes.abspath}
+      data-is-virtual={nodes.isVirtual}
       onClick={handler}
       onContextMenu={event => handleContextMenu(event, nodes)}
     >

@@ -111,6 +111,7 @@ class EditorComponent extends React.Component {
 
     handleSnackBarClose = (event, reason) => {
         this.setState({ snackBarSuccess: false });
+        this.setState({ snackBarError: false });
     };
 
     render() {
