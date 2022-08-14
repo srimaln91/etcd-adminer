@@ -58,7 +58,7 @@ export default function ConnectionCard(props) {
     }
 
     return (
-        <Card variant="outlined" sx={{ maxWidth: 345, m: 1 }}>
+        <Card variant="outlined" sx={{ maxWidth: 345, m: 1, border: `${props.isActive ? "3px solid #1976d2" : "1px solid #1976d2"}` }}>
             <CardHeader
                 avatar={
                     <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">

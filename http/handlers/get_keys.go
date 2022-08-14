@@ -40,7 +40,7 @@ func (jh *GenericHandler) GetKeys(rw http.ResponseWriter, r *http.Request) {
 		path := segments[:length-1]
 		filename := segments[length-1]
 
-		fileTree.AddFile(fileTree.Root, path, filename)
+		fileTree.AddFile(fileTree.Root, path, filename, false)
 	}
 
 	respData, err := json.Marshal(fileTree.Root)

@@ -13,6 +13,7 @@ type Node struct {
 	Nodes      []*Node    `json:"children"`
 	AbsPath    string     `json:"abspath"`
 	Permission Permission `json:"permission"`
+	IsVirtual  bool       `json:"isVirtual"`
 }
 
 type NodeType byte
@@ -36,12 +37,12 @@ type FileTree struct {
 
 func NewFileTree(basename string) *FileTree {
 	return &FileTree{
-		Root:      NewNode(basename, 1),
+		Root:      NewNode(basename, 1, false),
 		NodeCount: 1,
 	}
 }
 
-func NewNode(name string, ID int64) *Node {
+func NewNode(name string, ID int64, isVirtual bool) *Node {
 	return &Node{
 		ID:      ID,
 		Name:    name,
@@ -49,16 +50,17 @@ func NewNode(name string, ID int64) *Node {
 		Typev2:  NODE_TYPE_DIRECTORY,
 		Nodes:   make([]*Node, 0),
 		AbsPath: "",
+		IsVirtual: isVirtual,
 	}
 }
 
-func (f *Node) NewFolder(name string, ID int64) *Node {
-	folder := NewNode(name, ID)
+func (f *Node) NewFolder(name string, ID int64, isVirtual bool) *Node {
+	folder := NewNode(name, ID, isVirtual)
 	f.Nodes = append(f.Nodes, folder)
 	return folder
 }
 
-func (ft *FileTree) SetupPath(baseNode *Node, path []string) *Node {
+func (ft *FileTree) SetupPath(baseNode *Node, path []string, isVirtual bool) *Node {
 	leafNode := baseNode
 
 	for _, p := range path {
@@ -73,7 +75,7 @@ func (ft *FileTree) SetupPath(baseNode *Node, path []string) *Node {
 
 		if !nodeExist {
 			ft.NodeCount++
-			folder := leafNode.NewFolder(p, ft.NodeCount)
+			folder := leafNode.NewFolder(p, ft.NodeCount, isVirtual)
 
 			folder.AbsPath = leafNode.AbsPath + "/" + p
 
@@ -85,9 +87,9 @@ func (ft *FileTree) SetupPath(baseNode *Node, path []string) *Node {
 	return leafNode
 }
 
-func (ft *FileTree) AddFile(baseNode *Node, path []string, filename string) *Node {
+func (ft *FileTree) AddFile(baseNode *Node, path []string, filename string, isVirtual bool) *Node {
 	// Setup the path
-	leafNode := ft.SetupPath(baseNode, path)
+	leafNode := ft.SetupPath(baseNode, path, isVirtual)
 
 	// Do not create the node if it exists in the tree
 	for _, f := range leafNode.Nodes {
@@ -111,8 +113,8 @@ func (ft *FileTree) AddFile(baseNode *Node, path []string, filename string) *Nod
 	return file
 }
 
-func (ft *FileTree) AddDirectory(baseNode *Node, path []string) *Node {
+func (ft *FileTree) AddDirectory(baseNode *Node, path []string, isVirtual bool) *Node {
 	// Setup the path
-	leafNode := ft.SetupPath(baseNode, path)
+	leafNode := ft.SetupPath(baseNode, path, isVirtual)
 	return leafNode
 }

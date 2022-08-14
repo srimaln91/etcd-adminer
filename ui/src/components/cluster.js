@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -10,22 +10,22 @@ export default function ClusterInfo(props) {
 
     const [clusterInfo, setClusterInfo] = useState({ clusterInfo: {} });
     const [errorMessage, setErrorMessage] = useState("");
-    const dataService = new DataService();
+
+    const fetchData = useCallback(async() => {
+        try {
+            let clusterInfo = await new DataService().GetClusterInfo();
+            setClusterInfo(clusterInfo);
+            setErrorMessage("");
+        } catch (err) {
+            console.error(err);
+            setErrorMessage("Something went wrong!")
+        }
+      }, [])
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                let clusterInfo = await dataService.GetClusterInfo();
-                setClusterInfo(clusterInfo);
-                setErrorMessage("");
-            } catch (err) {
-                console.error(err);
-                setErrorMessage("Something went wrong!")
-            }
-        };
-
         fetchData();
-    });
+
+    }, [props, fetchData]);
 
     const getAlert = () => {
         if (errorMessage !== "") {

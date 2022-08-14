@@ -19,7 +19,7 @@ func TestCreatePath(t *testing.T) {
 	}
 
 	path := []string{"system", "app1", "db"}
-	leaf := f.SetupPath(f.Root, path)
+	leaf := f.SetupPath(f.Root, path, false)
 	if leaf.Name != "db" {
 		t.Error("incorret output")
 	}
@@ -36,7 +36,7 @@ func TestAddFile(t *testing.T) {
 	filename := "testfile"
 	// fileContent := []byte("test byte array")
 
-	f.AddFile(f.Root, path, filename)
+	f.AddFile(f.Root, path, filename, false)
 	// if !bytes.Equal(fileContent, file.Content.([]byte)) {
 	// 	t.Error("incorrect result")
 	// }
