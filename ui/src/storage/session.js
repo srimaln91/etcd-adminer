@@ -15,8 +15,6 @@ class Session {
     }
 }
 
-class ErrorNoSessionFound extends Error {}
-
 class SessionStore {
     key = "sessions"
 
