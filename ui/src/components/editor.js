@@ -143,11 +143,11 @@ class EditorComponent extends React.Component {
                 >
                     <Paper sx={{ marginBottom: 1, padding: 2 }}>
                         <Stack direction="row" spacing={2}>
-                            <Item>Key: {this.state.key}</Item>
-                            <Item>Create Revision: {this.state.remoteKey.createRevision} </Item>
-                            <Item>Mod Revision: {this.state.remoteKey.modRevision}</Item>
-                            <Item>Version: {this.state.remoteKey.version}</Item>
-                            <Item>Lease: {this.state.remoteKey.lease === 0 ? "None" : this.state.remoteKey.lease}</Item>
+                            <Item><b>Key: </b> {this.state.key}</Item>
+                            <Item><b>Create Revision: </b> {this.state.remoteKey.createRevision} </Item>
+                            <Item><b>Mod Revision: </b> {this.state.remoteKey.modRevision}</Item>
+                            <Item><b>Version: </b> {this.state.remoteKey.version}</Item>
+                            <Item><b>Lease: </b> {this.state.remoteKey.lease === 0 ? "None" : this.state.remoteKey.lease}</Item>
                         </Stack>
                     </Paper>
                     <div>

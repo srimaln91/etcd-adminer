@@ -5,6 +5,7 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import EditorComponent from './editor';
 import DataService from '../data/service'
+import BottomInfoBar from './bottomInfoBar';
 
 export default function Keys(props) {
     const dataService = useMemo( () => new DataService(), []);
@@ -62,7 +63,7 @@ export default function Keys(props) {
 
     return (
         <React.Fragment>
-            <Grid container spacing={3}>
+            <Grid container spacing={1}>
 
                 <Grid item xs={12} md={4} lg={3}>
                     <Paper
@@ -89,9 +90,7 @@ export default function Keys(props) {
                 </Grid>
 
                 <Grid item xs={12}>
-                    <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column', height: "40px" }}>
-                        {/* <Orders /> */}
-                    </Paper>
+                    <BottomInfoBar />
                 </Grid>
             </Grid>
         </React.Fragment>
