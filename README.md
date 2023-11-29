@@ -4,7 +4,7 @@
 ![image info](./resources/screenshot.png)
 
 ## Configuration
-The application config is defined in yaml format.
+The application config is defined in yaml format.  You may obtain it from (config.default.yaml)[config.default.yaml].
 
 ```yaml
 http:
@@ -14,6 +14,7 @@ logger:
   level: "DEBUG"
 
 etcd:
+- name: "LOCAL"
   endpoints:
     - "0.0.0.0:23791"
     - "0.0.0.0:23792"
